@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 using namespace std;
 
