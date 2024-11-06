@@ -1,11 +1,14 @@
 #include "httplib.h"
+#include "json.hpp"
 #include "utils.h"
 
 #include <iostream>
 #include <sqlite3.h>
 using namespace std;
+using namespace httplib;
+using json = nlohmann::json;
 
-httplib::Server svr;
+Server svr;
 
 int main() {
   // using some code from sqlite docs
@@ -17,9 +20,19 @@ int main() {
     return (1);
   }
 
-  svr.Get("/", [](const httplib::Request &, httplib::Response &res) {
+  svr.Get("/", [](const Request &, Response &res) {
     string html = loadHTML("index.html");
     res.set_content(html, "text/html");
+  });
+  svr.Get("/login", [](const Request &, Response &res) {
+    string html = loadHTML("login.html");
+    res.set_content(html, "text/html");
+  });
+
+  svr.Get("/test", [](const Request &, Response &res) {
+    json j;
+    j["hello"] = "world";
+    res.set_content(to_string(j), "application/json");
   });
   cout << "Server running on port 8080" << endl;
   svr.listen("0.0.0.0", 8080);
