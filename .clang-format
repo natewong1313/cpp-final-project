@@ -46,8 +46,8 @@ AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 
 AlignConsecutiveBitFields: Consecutive
-AlignConsecutiveAssignments: Consecutive
-AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
 
 PointerAlignment: Right
 QualifierAlignment: Left
@@ -68,7 +68,7 @@ MaxEmptyLinesToKeep: 1
 ContinuationIndentWidth: 2
 SpacesBeforeTrailingComments: 1
 
-ColumnLimit: 60
+ColumnLimit: 100
 
 SpaceBeforeParensOptions:
   AfterPlacementOperator: false

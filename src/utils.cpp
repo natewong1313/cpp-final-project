@@ -4,7 +4,7 @@
 using namespace std;
 
 string loadHTML(string path) {
-  string   html;
+  string html;
   ifstream in_file;
   in_file.open("../html/" + path);
   // if (in_file.fail())
