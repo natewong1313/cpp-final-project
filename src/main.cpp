@@ -8,7 +8,7 @@ httplib::Server svr;
 int main()
 {
     cout << "its working" << endl;
-    string html = loadHTML("./html/index.html");
+    string html = loadHTML("index.html");
 
     svr.Get("/", [](const httplib::Request &, httplib::Response &res)
             { res.set_content("Hello World!", "text/plain"); });
