@@ -53,11 +53,9 @@ void Database::setupTables() {
 
 void Database::runSqlFile(string filePath) {
   string sqlToExec = getFileContents(filePath);
-  char *errorMsg;
-  int rc = sqlite3_exec(db, sqlToExec.c_str(), NULL, 0, &errorMsg);
+  int rc = sqlite3_exec(db, sqlToExec.c_str(), NULL, 0, NULL);
   if (rc != SQLITE_OK) {
-    std::cerr << "Error Create Table" << std::endl;
-    sqlite3_free(errorMsg);
+    std::cerr << "Error Creating Table - " << sqlite3_errmsg(db) << std::endl;
   } else {
     cout << rc << endl;
   }
