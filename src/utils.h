@@ -5,6 +5,7 @@
 #include <string>
 using namespace std;
 
+string getFileContents(string path);
 string loadHTML(string path);
 
 #endif

@@ -3,16 +3,20 @@
 #include <string>
 using namespace std;
 
-string loadHTML(string path) {
-  string html;
+string getFileContents(string path) {
+  string contents;
   ifstream in_file;
-  in_file.open("../html/" + path);
+  in_file.open(path);
   // if (in_file.fail())
   // {
   //     return 0;
   // }
   string line;
-  while (getline(in_file, line)) { html += line; }
+  while (getline(in_file, line)) { contents += line; }
   in_file.close();
-  return html;
+  return contents;
+}
+
+string loadHTML(string path) {
+  return getFileContents("../html/" + path);
 }

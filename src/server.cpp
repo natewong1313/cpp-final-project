@@ -21,6 +21,7 @@ class Message {
     int id;
     string content;
     string authorId;
+    int createdAt;
 
   public:
     Message(string content, string authorId);
