@@ -2,6 +2,7 @@
 #include "httplib.h"
 #include "json.hpp"
 #include "message.h"
+#include "server.h"
 #include "utils.h"
 
 #include <iostream>
@@ -14,7 +15,8 @@ Server svr;
 
 int main() {
   Database *newDb = Database::getInstance();
-  Message msg = Message(1, 1, "Hello world");
+  ChatServer server = ChatServer(1, "Nates server");
+  Message msg = Message(1, server.getId(), "Hello world");
 
   svr.Get("/", [](const Request &, Response &res) {
     string html = loadHTML("index.html");
