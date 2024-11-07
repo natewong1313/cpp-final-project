@@ -1,4 +1,11 @@
 {
+  "[cpp]": {
+    "editor.wordBasedSuggestions": "off",
+    "editor.semanticHighlighting.enabled": true,
+    "editor.stickyScroll.defaultModel": "foldingProviderModel",
+    "editor.suggest.insertMode": "replace",
+    "editor.tabSize": 2
+  },
   "files.associations": {
     "ostream": "cpp",
     "*.tcc": "cpp",
@@ -69,6 +76,7 @@
     "thread": "cpp",
     "typeinfo": "cpp",
     "valarray": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "format": "cpp"
   }
 }

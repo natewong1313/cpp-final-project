@@ -37,6 +37,10 @@ void Database::connect() {
   }
 }
 
+sqlite3 *Database::getConnection() {
+  return db;
+}
+
 void Database::cleanup() {
   sqlite3_close(db);
 }
@@ -44,15 +48,17 @@ void Database::cleanup() {
 void Database::setupTables() {
   // https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
   // loop through all sql files and run them
-  for (const auto &file : filesystem::directory_iterator("../sql")) {
-    string sqlToExec = getFileContents(file.path());
-    char *errorMsg;
-    int rc = sqlite3_exec(db, sqlToExec.c_str(), NULL, 0, &errorMsg);
-    if (rc != SQLITE_OK) {
-      std::cerr << "Error Create Table" << std::endl;
-      sqlite3_free(errorMsg);
-    } else {
-      cout << rc << endl;
-    }
-  }
+  for (const auto &file : filesystem::directory_iterator("../sql")) { runSqlFile(file.path()); }
 };
+
+void Database::runSqlFile(string filePath) {
+  string sqlToExec = getFileContents(filePath);
+  char *errorMsg;
+  int rc = sqlite3_exec(db, sqlToExec.c_str(), NULL, 0, &errorMsg);
+  if (rc != SQLITE_OK) {
+    std::cerr << "Error Create Table" << std::endl;
+    sqlite3_free(errorMsg);
+  } else {
+    cout << rc << endl;
+  }
+}

@@ -16,13 +16,14 @@ class Database {
 
     sqlite3 *db;
 
+    void connect();
     void runSqlFile(string filePath);
 
   public:
     Database(const Database &obj) = delete;
 
     static Database *getInstance();
-    void connect();
+    sqlite3 *getConnection();
     void cleanup();
     void setupTables();
 };

@@ -1,6 +1,7 @@
 #include "db.h"
 #include "httplib.h"
 #include "json.hpp"
+#include "message.h"
 #include "utils.h"
 
 #include <iostream>
@@ -13,6 +14,7 @@ Server svr;
 
 int main() {
   Database *newDb = Database::getInstance();
+  Message msg = Message(1, "Hello world");
 
   svr.Get("/", [](const Request &, Response &res) {
     string html = loadHTML("index.html");
