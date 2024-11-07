@@ -10,7 +10,8 @@
 using namespace std;
 
 // sql constants
-string createMessageStmt = "INSERT INTO messages(author_id, content, created_at) VALUES (?, ?, ?)";
+string createMessageStmt =
+  "INSERT INTO messages(author_id, content, created_at) VALUES (?, ?, ?) RETURNING id";
 
 Message::Message(int authorId, string content) {
   // https://stackoverflow.com/questions/6012663/get-unix-timestamp-with-c
@@ -33,22 +34,18 @@ Message::Message(int authorId, string content) {
   sqlite3_bind_int(stmt, 3, createdAt);
 
   rc = sqlite3_step(stmt);
-  if (rc != SQLITE_OK) {
-    cerr << "Error creating message" << endl;
+  if (rc != SQLITE_ROW) {
+    cerr << "Error creating message" << sqlite3_errmsg(dbConn) << endl;
     return;
   }
+
+  int messageId = sqlite3_column_int(stmt, 0);
+  this->id = messageId;
+
   rc = sqlite3_finalize(stmt);
   if (rc != SQLITE_OK) {
-    cerr << "Error creating message" << endl;
+    cerr << "Error creating message" << sqlite3_errmsg(dbConn) << endl;
     return;
   }
   cout << "Created message successfully" << endl;
-  // char *errorMsg;
-  // int rc = sqlite3_exec(db, , NULL, 0, &errorMsg);
-  // if (rc != SQLITE_OK) {
-  //   // todo: improve error handling
-  //   cout << "Error creating message" << endl;
-  //   sqlite3_free(errorMsg);
-  //   return
-  // }
 }
