@@ -15,8 +15,9 @@ Server svr;
 
 int main() {
   Database *newDb = Database::getInstance();
-  ChatServer server = ChatServer(1, "Nates server");
-  Message msg = Message(1, server.getId(), "Hello world");
+  vector<ChatServer> servers = loadChatServersFromDb();
+  // ChatServer server = ChatServer(1, "Nates server");
+  // Message msg = Message(1, server.getId(), "Hello world");
 
   svr.Get("/", [](const Request &, Response &res) {
     string html = loadHTML("index.html");

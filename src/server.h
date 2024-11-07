@@ -2,6 +2,7 @@
 #define SERVER_H
 
 #include <string>
+#include <vector>
 using namespace std;
 
 class ChatServer {
@@ -12,7 +13,10 @@ class ChatServer {
 
   public:
     ChatServer(int adminId, string name);
+    ChatServer(int id, int adminId, const unsigned char *name);
     int getId();
 };
+
+vector<ChatServer> loadChatServersFromDb();
 
 #endif
