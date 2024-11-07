@@ -1,9 +1,34 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>cpp proj</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Hola</h1>
-</body>
+    <h1>Available servers are:</h1>
+    <ul id="servers"></ul>
+  </body>
+
+  <script>
+    async function getServers() {
+      const resp = await fetch("/api/servers");
+      const jsonResp = await resp.json();
+      return jsonResp["servers"];
+    }
+    function addServerLinkToDom(server) {
+      const a = document.createElement("a");
+      a.textContent = server.name;
+      a.href = `/server/${server.id}`;
+      const li = document.createElement("li");
+      li.appendChild(a);
+      return li;
+    }
+    document.addEventListener("DOMContentLoaded", async function () {
+      const servers = await getServers();
+      const serversList = document.getElementById("servers");
+      servers.forEach((server) => {
+        serversList.appendChild(addServerLinkToDom(server));
+      });
+    });
+  </script>
 </html>

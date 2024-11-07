@@ -6,6 +6,11 @@
     "editor.suggest.insertMode": "replace",
     "editor.tabSize": 2
   },
+  "[html]": {
+    "editor.suggest.insertMode": "replace",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
   "files.associations": {
     "ostream": "cpp",
     "*.tcc": "cpp",
