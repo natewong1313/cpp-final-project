@@ -8,11 +8,12 @@ class Message {
   private:
     int id;
     int authorId;
+    int serverId;
     string content;
     int createdAt;
 
   public:
-    Message(int authorId, string content);
+    Message(int authorId, int serverId, string content);
     // todo: add constructor from db row
     void update(string newContent);
     void save();

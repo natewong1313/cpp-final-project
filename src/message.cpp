@@ -10,10 +10,10 @@
 using namespace std;
 
 // sql constants
-string createMessageStmt =
-  "INSERT INTO messages(author_id, content, created_at) VALUES (?, ?, ?) RETURNING id";
+string createMessageStmt = "INSERT INTO messages(author_id, server_id, content, created_at) VALUES "
+                           "(?, ?, ?, ?) RETURNING id";
 
-Message::Message(int authorId, string content) {
+Message::Message(int authorId, int serverId, string content) {
   // https://stackoverflow.com/questions/6012663/get-unix-timestamp-with-c
   unsigned long int createdAt = time(NULL);
   this->authorId = authorId;
@@ -30,8 +30,9 @@ Message::Message(int authorId, string content) {
     return;
   }
   sqlite3_bind_int(stmt, 1, authorId);
-  sqlite3_bind_text(stmt, 2, content.c_str(), strlen(content.c_str()), NULL);
-  sqlite3_bind_int(stmt, 3, createdAt);
+  sqlite3_bind_int(stmt, 2, serverId);
+  sqlite3_bind_text(stmt, 3, content.c_str(), strlen(content.c_str()), NULL);
+  sqlite3_bind_int(stmt, 4, createdAt);
 
   rc = sqlite3_step(stmt);
   if (rc != SQLITE_ROW) {

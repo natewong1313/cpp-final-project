@@ -14,7 +14,7 @@ Server svr;
 
 int main() {
   Database *newDb = Database::getInstance();
-  Message msg = Message(1, "Hello world");
+  Message msg = Message(1, 1, "Hello world");
 
   svr.Get("/", [](const Request &, Response &res) {
     string html = loadHTML("index.html");
