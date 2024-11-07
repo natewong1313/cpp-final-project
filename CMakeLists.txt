@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 project(cpp-project)
 
 find_package(SQLite3 REQUIRED)
+set(SQLITE3_THREADSAFE 2)
 
 include_directories(include ${SQLite3_INCLUDE_DIRS})
 include_directories(include)
