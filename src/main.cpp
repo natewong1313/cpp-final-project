@@ -1,3 +1,4 @@
+#include "db.h"
 #include "httplib.h"
 #include "json.hpp"
 #include "utils.h"
@@ -11,6 +12,8 @@ using json = nlohmann::json;
 Server svr;
 
 int main() {
+  Database *newDb = Database::getInstance();
+
   // using some code from sqlite docs
   sqlite3 *db;
   int rc = sqlite3_open("pleasework.db", &db);
