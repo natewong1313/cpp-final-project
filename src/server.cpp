@@ -1,11 +1,13 @@
 #include "server.h"
 
 #include "db.h"
+#include "json.hpp"
 
 #include <iostream>
 #include <sqlite3.h>
 #include <string.h>
 #include <vector>
+using json = nlohmann::json;
 
 string selectServersStmt = "SELECT * FROM servers";
 string createServerStmt = "INSERT INTO servers(admin_id, name) VALUES (?, ?) RETURNING id";
@@ -32,7 +34,12 @@ vector<ChatServer> loadChatServersFromDb() {
   return servers;
 }
 
-// creates a new chat server in the database
+vector<json> chatServersToJson(vector<ChatServer> chatServers) {
+  vector<json> servers;
+  for (ChatServer server : chatServers) { servers.push_back(server.toJson()); }
+  return servers;
+}
+
 ChatServer::ChatServer(int adminId, string name) {
   this->adminId = adminId;
   this->name = name;
@@ -66,7 +73,6 @@ ChatServer::ChatServer(int adminId, string name) {
   cout << "Server" << endl;
 }
 
-// creates a chat server with all arguments provided
 ChatServer::ChatServer(int id, int adminId, const unsigned char *name) {
   this->id = id;
   this->adminId = adminId;
@@ -76,4 +82,12 @@ ChatServer::ChatServer(int id, int adminId, const unsigned char *name) {
 
 int ChatServer::getId() {
   return id;
+}
+
+json ChatServer::toJson() {
+  return json{
+    {     "id",      id},
+    {"adminId", adminId},
+    {   "name",    name},
+  };
 }

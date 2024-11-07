@@ -1,8 +1,11 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "json.hpp"
+
 #include <string>
 #include <vector>
+using json = nlohmann::json;
 using namespace std;
 
 class ChatServer {
@@ -15,8 +18,11 @@ class ChatServer {
     ChatServer(int adminId, string name);
     ChatServer(int id, int adminId, const unsigned char *name);
     int getId();
+    json toJson();
 };
 
 vector<ChatServer> loadChatServersFromDb();
+// might delete this function eventually
+vector<json> chatServersToJson(vector<ChatServer>);
 
 #endif

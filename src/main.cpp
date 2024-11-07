@@ -28,9 +28,10 @@ int main() {
     res.set_content(html, "text/html");
   });
 
-  svr.Get("/test", [](const Request &, Response &res) {
+  svr.Get("/api/servers", [](const Request &, Response &res) {
+    vector<ChatServer> servers = loadChatServersFromDb();
     json j;
-    j["hello"] = "world";
+    j["servers"] = chatServersToJson(servers);
     res.set_content(to_string(j), "application/json");
   });
   cout << "Server running on port 8080" << endl;
