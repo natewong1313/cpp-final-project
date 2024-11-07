@@ -18,7 +18,7 @@
     function addServerLinkToDom(server) {
       const a = document.createElement("a");
       a.textContent = server.name;
-      a.href = `/server/${server.id}`;
+      a.href = `/server?id=${server.id}`;
       const li = document.createElement("li");
       li.appendChild(a);
       return li;

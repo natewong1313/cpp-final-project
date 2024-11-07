@@ -21,8 +21,6 @@ class ChatServer {
     json toJson();
 };
 
-vector<ChatServer> loadChatServersFromDb();
-// might delete this function eventually
-vector<json> chatServersToJson(vector<ChatServer>);
+vector<json> loadChatServersFromDb();
 
 #endif

@@ -12,8 +12,8 @@ using json = nlohmann::json;
 string selectServersStmt = "SELECT * FROM servers";
 string createServerStmt = "INSERT INTO servers(admin_id, name) VALUES (?, ?) RETURNING id";
 
-vector<ChatServer> loadChatServersFromDb() {
-  vector<ChatServer> servers;
+vector<json> loadChatServersFromDb() {
+  vector<json> serversJson;
   Database *db = Database::getInstance();
   sqlite3 *dbConn = db->getConnection();
   sqlite3_stmt *stmt;
@@ -21,23 +21,17 @@ vector<ChatServer> loadChatServersFromDb() {
   int rc = sqlite3_prepare_v2(dbConn, selectServersStmt.c_str(), -1, &stmt, NULL);
   if (rc != SQLITE_OK) {
     cerr << "Error loading servers" << sqlite3_errmsg(dbConn) << endl;
-    return servers;
+    return serversJson;
   }
 
   while (sqlite3_step(stmt) == SQLITE_ROW) {
     ChatServer server = ChatServer(sqlite3_column_int(stmt, 0), sqlite3_column_int(stmt, 1),
                                    sqlite3_column_text(stmt, 2));
-    servers.push_back(server);
+    serversJson.push_back(server.toJson());
   };
   rc = sqlite3_finalize(stmt);
   if (rc != SQLITE_OK) { cerr << "Error loading servers" << sqlite3_errmsg(dbConn) << endl; }
-  return servers;
-}
-
-vector<json> chatServersToJson(vector<ChatServer> chatServers) {
-  vector<json> servers;
-  for (ChatServer server : chatServers) { servers.push_back(server.toJson()); }
-  return servers;
+  return serversJson;
 }
 
 ChatServer::ChatServer(int adminId, string name) {

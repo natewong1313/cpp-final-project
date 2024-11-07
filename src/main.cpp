@@ -15,24 +15,36 @@ Server svr;
 
 int main() {
   Database *newDb = Database::getInstance();
-  vector<ChatServer> servers = loadChatServersFromDb();
+  // vector<ChatServer> servers = loadChatServersFromDb();
   // ChatServer server = ChatServer(1, "Nates server");
   // Message msg = Message(1, server.getId(), "Hello world");
 
   svr.Get("/", [](const Request &, Response &res) {
-    string html = loadHTML("index.html");
-    res.set_content(html, "text/html");
+    res.set_content(loadHTML("index.html"), "text/html");
   });
-  svr.Get("/login", [](const Request &, Response &res) {
-    string html = loadHTML("login.html");
-    res.set_content(html, "text/html");
+  svr.Get("/server", [](const Request &, Response &res) {
+    res.set_content(loadHTML("server.html"), "text/html");
   });
 
   svr.Get("/api/servers", [](const Request &, Response &res) {
-    vector<ChatServer> servers = loadChatServersFromDb();
     json j;
-    j["servers"] = chatServersToJson(servers);
+    j["servers"] = loadChatServersFromDb();
     res.set_content(to_string(j), "application/json");
+  });
+  svr.Get("/api/messages", [](const Request &req, Response &res) {
+    // const serverId = req.get_param_value("server");
+    if (!req.has_param("server")) {
+      res.set_content("{\"error\": \"missing server id\"}", "application/json");
+      return;
+    }
+    auto serverId = req.get_param_value("server");
+
+    res.set_content("{\"error\": \"missing server id\"}", "application/json");
+
+    // vector<ChatServer> servers = loadChatServersFromDb();
+    // json j;
+    // j["servers"] = chatServersToJson(servers);
+    // res.set_content(to_string(j), "application/json");
   });
   cout << "Server running on port 8080" << endl;
   svr.listen("0.0.0.0", 8080);

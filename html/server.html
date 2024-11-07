@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cpp proj</title>
+  </head>
+  <body>
+    <h1>Server</h1>
+    <p id="serverName"></p>
+  </body>
+
+  <script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const serverId = urlParams.get("id");
+    console.log(serverId);
+
+    async function getMessages() {
+      const resp = await fetch(`/api/messages?server=${serverId}`);
+      const jsonResp = await resp.json();
+    }
+    document.addEventListener("DOMContentLoaded", async function () {
+      const messages = await getMessages();
+    });
+  </script>
+</html>
