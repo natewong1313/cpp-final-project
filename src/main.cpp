@@ -3,6 +3,7 @@
 #include "json.hpp"
 #include "message.h"
 #include "server.h"
+#include "services/messaging.h"
 #include "utils.h"
 
 #include <iostream>
@@ -18,6 +19,7 @@ int main() {
   // vector<ChatServer> servers = loadChatServersFromDb();
   // ChatServer server = ChatServer(1, "Nates server");
   // Message msg = Message(1, server.getId(), "Hello world");
+  sendMessage(1, 1, "Test message");
 
   svr.Get("/", [](const Request &, Response &res) {
     res.set_content(loadHTML("index.html"), "text/html");
