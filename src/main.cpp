@@ -37,8 +37,19 @@ int main() {
       return;
     }
     int serverId = atoi(req.get_param_value("server").c_str());
+
+    ChatServer server = ChatServer(serverId);
+    cout << server.toJson() << endl;
+
     json j;
     j["messages"] = loadMessagesFromDb(serverId);
+    res.set_content(to_string(j), "application/json");
+  });
+  svr.Post("/api/message", [](const Request &req, Response &res) {
+    cout << req.body << endl;
+    // int serverId = atoi(req.get_param_value("server").c_str());
+    json j;
+    // j["messages"] = loadMessagesFromDb(serverId);
     res.set_content(to_string(j), "application/json");
   });
   cout << "Server running on port 8080" << endl;

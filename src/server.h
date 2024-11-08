@@ -15,6 +15,7 @@ class ChatServer {
     string name;
 
   public:
+    ChatServer(int id);
     ChatServer(int adminId, string name);
     ChatServer(int id, int adminId, const unsigned char *name);
     int getId();

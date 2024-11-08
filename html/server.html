@@ -5,7 +5,12 @@
   </head>
   <body>
     <h1>Server</h1>
+    <a href="/">Back</a>
     <ul id="messages"></ul>
+    <form id="messageForm">
+      <input id="content" />
+      <button type="submit">Send message</button>
+    </form>
   </body>
 
   <script>
@@ -30,5 +35,30 @@
         messagesList.appendChild(addMessageToDom(message));
       });
     });
+    document
+      .getElementById("messageForm")
+      .addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const content = document.getElementById("content").value;
+
+        const response = await fetch("/api/messages/new", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: content,
+            serverId: serverId,
+          }),
+        });
+
+        if (response.ok) {
+          document.getElementById("content").value = "";
+          const message = { content: content };
+          document
+            .getElementById("messages")
+            .appendChild(addMessageToDom(message));
+        }
+      });
   </script>
 </html>

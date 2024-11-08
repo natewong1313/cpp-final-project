@@ -2,6 +2,7 @@
 
 #include "db.h"
 #include "json.hpp"
+#include "utils.h"
 
 #include <ctime>
 #include <format>
@@ -23,7 +24,7 @@ vector<json> loadMessagesFromDb(int serverId) {
 
   int rc = sqlite3_prepare_v2(dbConn, selectMessagesStmt.c_str(), -1, &stmt, NULL);
   if (rc != SQLITE_OK) {
-    cerr << "Error loading messages" << sqlite3_errmsg(dbConn) << endl;
+    handleDbError(db);
     return messagesJson;
   }
   sqlite3_bind_int(stmt, 1, serverId);
@@ -35,7 +36,7 @@ vector<json> loadMessagesFromDb(int serverId) {
     messagesJson.push_back(msg.toJson());
   };
   rc = sqlite3_finalize(stmt);
-  if (rc != SQLITE_OK) { cerr << "Error loading servers" << sqlite3_errmsg(dbConn) << endl; }
+  if (rc != SQLITE_OK) { handleDbError(db); }
   return messagesJson;
 }
 
@@ -52,7 +53,7 @@ Message::Message(int authorId, int serverId, string content) {
   // https://stackoverflow.com/questions/31745465/how-to-prepare-sql-statements-and-bind-parameters
   int rc = sqlite3_prepare_v2(dbConn, createMessageStmt.c_str(), -1, &stmt, NULL);
   if (rc != SQLITE_OK) {
-    cerr << "Error creating message" << sqlite3_errmsg(dbConn) << endl;
+    handleDbError(db);
     return;
   }
   sqlite3_bind_int(stmt, 1, authorId);
@@ -62,7 +63,7 @@ Message::Message(int authorId, int serverId, string content) {
 
   rc = sqlite3_step(stmt);
   if (rc != SQLITE_ROW) {
-    cerr << "Error creating message" << sqlite3_errmsg(dbConn) << endl;
+    handleDbError(db);
     return;
   }
 
@@ -71,7 +72,7 @@ Message::Message(int authorId, int serverId, string content) {
 
   rc = sqlite3_finalize(stmt);
   if (rc != SQLITE_OK) {
-    cerr << "Error creating message" << sqlite3_errmsg(dbConn) << endl;
+    handleDbError(db);
     return;
   }
   cout << "Created message successfully" << endl;
@@ -89,7 +90,6 @@ json Message::toJson() {
   return json{
     {       "id",        id},
     { "authorId",  authorId},
-    // { "serverId",  serverId},
     {  "content",   content},
     {"createdAt", createdAt},
   };
