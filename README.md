@@ -2,7 +2,11 @@
 
 ## Pre-Requisites
 
-You'll need sqlite installed on your system
+You'll need sqlite and libuuid installed on your system
+
+```bash
+sudo apt-get install sqlite3
+```
 
 ## Getting Started
 
@@ -14,8 +18,8 @@ Simply run `make` to get the project running
 
 - [yhirose/cpp-httplib](https://github.com/yhirose/cpp-httplib) single file http library used for the base server
 - [nlohmann/json](https://github.com/nlohmann/json) very convenient json library
-
-Helpful blog posts/docs
+- [r-lyeh-archived/sole](https://github.com/r-lyeh-archived/sole) library for uuids bc libuuid-dev is dog\*\*\*\*
+  Helpful blog posts/docs
 
 - [sqlite docs](https://www.sqlite.org/cintro.html)
 - [sqlite multi-threading](https://www.codeproject.com/Articles/5379574/More-SQLite-Multi-threading)

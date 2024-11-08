@@ -1,4 +1,5 @@
 #include "db.h"
+#include "sole.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -26,4 +27,8 @@ string loadHTML(string path) {
 bool handleDbError(Database *db) {
   cerr << "Db error occured: " << sqlite3_errmsg(db->getConnection()) << endl;
   return false;
+}
+
+string createId() {
+  return sole::uuid4().str();
 }

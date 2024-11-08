@@ -4,7 +4,7 @@
 #include <string>
 using namespace std;
 
-void broadcastMessage(int authorId, int serverId, int messageId, string content);
+void broadcastMessage(int authorId, int serverId, string messageId, string content);
 bool sendMessage(int authorId, int serverId, string content);
 
 #endif

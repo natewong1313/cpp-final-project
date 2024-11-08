@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS servers(
 );
 
 CREATE TABLE IF NOT EXISTS messages(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT PRIMARY KEY,
     author_id INTEGER NOT NULL,
     server_id INTEGER NOT NULL,
     content TEXT,
