@@ -5,21 +5,30 @@
   </head>
   <body>
     <h1>Server</h1>
-    <p id="serverName"></p>
+    <ul id="messages"></ul>
   </body>
 
   <script>
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const serverId = urlParams.get("id");
-    console.log(serverId);
 
     async function getMessages() {
       const resp = await fetch(`/api/messages?server=${serverId}`);
       const jsonResp = await resp.json();
+      return jsonResp["messages"];
+    }
+    function addMessageToDom(message) {
+      const li = document.createElement("li");
+      li.textContent = `${message.content}`;
+      return li;
     }
     document.addEventListener("DOMContentLoaded", async function () {
       const messages = await getMessages();
+      const messagesList = document.getElementById("messages");
+      messages.forEach((message) => {
+        messagesList.appendChild(addMessageToDom(message));
+      });
     });
   </script>
 </html>

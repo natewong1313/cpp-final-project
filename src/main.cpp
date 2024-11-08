@@ -32,7 +32,6 @@ int main() {
     res.set_content(to_string(j), "application/json");
   });
   svr.Get("/api/messages", [](const Request &req, Response &res) {
-    // const serverId = req.get_param_value("server");
     if (!req.has_param("server")) {
       res.set_content("{\"error\": \"missing server id\"}", "application/json");
       return;
@@ -41,12 +40,6 @@ int main() {
     json j;
     j["messages"] = loadMessagesFromDb(serverId);
     res.set_content(to_string(j), "application/json");
-    // res.set_content("{\"error\": \"missing server id\"}", "application/json");
-
-    // vector<ChatServer> servers = loadChatServersFromDb();
-    // json j;
-    // j["servers"] = chatServersToJson(servers);
-    // res.set_content(to_string(j), "application/json");
   });
   cout << "Server running on port 8080" << endl;
   svr.listen("0.0.0.0", 8080);
