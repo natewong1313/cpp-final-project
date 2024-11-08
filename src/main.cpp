@@ -37,9 +37,11 @@ int main() {
       res.set_content("{\"error\": \"missing server id\"}", "application/json");
       return;
     }
-    auto serverId = req.get_param_value("server");
-
-    res.set_content("{\"error\": \"missing server id\"}", "application/json");
+    int serverId = atoi(req.get_param_value("server").c_str());
+    json j;
+    j["messages"] = loadMessagesFromDb(serverId);
+    res.set_content(to_string(j), "application/json");
+    // res.set_content("{\"error\": \"missing server id\"}", "application/json");
 
     // vector<ChatServer> servers = loadChatServersFromDb();
     // json j;
