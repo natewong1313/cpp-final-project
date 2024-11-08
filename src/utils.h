@@ -7,6 +7,6 @@ using namespace std;
 
 string getFileContents(string path);
 string loadHTML(string path);
-void handleDbError(Database *db);
+bool handleDbError(Database *db);
 
 #endif
