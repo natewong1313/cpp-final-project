@@ -4,6 +4,7 @@
 #include "message.h"
 #include "server.h"
 #include "services/messaging.h"
+#include "services/servers.h"
 #include "utils.h"
 
 #include <iostream>
@@ -16,10 +17,13 @@ Server svr;
 
 int main() {
   Database *newDb = Database::getInstance();
+
+  // createServer()
   // vector<ChatServer> servers = loadChatServersFromDb();
   // ChatServer server = ChatServer(1, "Nates server");
   // Message msg = Message(1, server.getId(), "Hello world");
-  sendMessage(1, 1, "Test message");
+  // sendMessage(1, 1, "Test message");
+  createServer("testUser", "Nates new server");
 
   svr.Get("/", [](const Request &, Response &res) {
     res.set_content(loadHTML("index.html"), "text/html");
