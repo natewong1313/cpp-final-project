@@ -23,42 +23,19 @@
       const jsonResp = await resp.json();
       return jsonResp["messages"];
     }
+    // TODO: obv this doesnt work but eagerly fetch messages before dom finishes
+    const messages = await getMessages();
+
     function addMessageToDom(message) {
       const li = document.createElement("li");
       li.textContent = `${message.content}`;
       return li;
     }
     document.addEventListener("DOMContentLoaded", async function () {
-      const messages = await getMessages();
       const messagesList = document.getElementById("messages");
       messages.forEach((message) => {
         messagesList.appendChild(addMessageToDom(message));
       });
     });
-    document
-      .getElementById("messageForm")
-      .addEventListener("submit", async function (e) {
-        e.preventDefault();
-        const content = document.getElementById("content").value;
-
-        const response = await fetch("/api/messages/new", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content: content,
-            serverId: serverId,
-          }),
-        });
-
-        if (response.ok) {
-          document.getElementById("content").value = "";
-          const message = { content: content };
-          document
-            .getElementById("messages")
-            .appendChild(addMessageToDom(message));
-        }
-      });
   </script>
 </html>

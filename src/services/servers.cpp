@@ -1,13 +1,17 @@
+#include "servers.h"
+
 #include "../db.h"
 #include "../utils.h"
 
 #include <string.h>
+#include <vector>
 using namespace std;
 string insertServerStmt = "INSERT INTO servers(id, admin_id, name) VALUES "
                           "(?, ?, ?)";
 
-// Inserts a new server into the db
-void addServerToDb(string serverId, string adminId, string name) {
+// Inserts a new server into the database
+void createServer(string adminId, string name) {
+  string serverId = createId();
   Database *db = Database::getInstance();
   sqlite3_stmt *stmt;
   int rc = sqlite3_prepare_v2(db->getConnection(), insertServerStmt.c_str(), -1, &stmt, NULL);
@@ -23,7 +27,4 @@ void addServerToDb(string serverId, string adminId, string name) {
   if (rc != SQLITE_OK) { return handleDbError(db); }
 }
 
-void createServer(string adminId, string name) {
-  string serverId = createId();
-  addServerToDb(serverId, adminId, name);
-}
+vector<server> getServers() {}

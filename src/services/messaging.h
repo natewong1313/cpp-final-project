@@ -4,8 +4,15 @@
 #include <string>
 using namespace std;
 
-void broadcastMessage(string messageId, int authorId, int serverId, string content);
-void addMessageToDb(string messageId, int authorId, int serverId, string content);
-void sendMessage(int authorId, int serverId, string content);
+struct message {
+    string id;
+    string authorId;
+    string serverId;
+    string content;
+};
+
+void broadcastMessage(message msg);
+void addMessageToDb(message msg);
+void sendMessage(string authorId, string serverId, string content);
 
 #endif
