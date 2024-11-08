@@ -4,7 +4,8 @@
 #include <string>
 using namespace std;
 
-void broadcastMessage(int authorId, int serverId, string messageId, string content);
-bool sendMessage(int authorId, int serverId, string content);
+void broadcastMessage(string messageId, int authorId, int serverId, string content);
+void addMessageToDb(string messageId, int authorId, int serverId, string content);
+void sendMessage(int authorId, int serverId, string content);
 
 #endif

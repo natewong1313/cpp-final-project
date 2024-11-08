@@ -24,9 +24,8 @@ string loadHTML(string path) {
   return getFileContents("../html/" + path);
 }
 
-bool handleDbError(Database *db) {
+void handleDbError(Database *db) {
   cerr << "Db error occured: " << sqlite3_errmsg(db->getConnection()) << endl;
-  return false;
 }
 
 string createId() {

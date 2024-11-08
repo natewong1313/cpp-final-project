@@ -7,7 +7,7 @@ using namespace std;
 
 string getFileContents(string path);
 string loadHTML(string path);
-bool handleDbError(Database *db);
+void handleDbError(Database *db);
 string createId();
 
 #endif

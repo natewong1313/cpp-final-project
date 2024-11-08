@@ -6,21 +6,15 @@
 #include <thread>
 using namespace std;
 
-void broadcastMessage(int authorId, int serverId, string messageId, string content) {
-  cout << "New message " + content << endl;
-};
-
 string createMsgStmt = "INSERT INTO messages(id, author_id, server_id, content, created_at) VALUES "
                        "(?, ?, ?, ?, ?) RETURNING id";
 
-// Broadcasts the message and adds it to the database
-//
-bool sendMessage(int authorId, int serverId, string content) {
-  string messageId = createId();
+// Sends message to connected clients
+void broadcastMessage(string messageId, int authorId, int serverId, string content) {
+  cout << "New message " + content << endl;
+};
 
-  thread msgThread(broadcastMessage, authorId, serverId, messageId, content);
-  msgThread.detach();
-
+void addMessageToDb(string messageId, int authorId, int serverId, string content) {
   Database *db = Database::getInstance();
   sqlite3_stmt *stmt;
   int rc = sqlite3_prepare_v2(db->getConnection(), createMsgStmt.c_str(), -1, &stmt, NULL);
@@ -36,5 +30,14 @@ bool sendMessage(int authorId, int serverId, string content) {
   if (rc != SQLITE_ROW) { return handleDbError(db); }
   rc = sqlite3_finalize(stmt);
   if (rc != SQLITE_OK) { return handleDbError(db); }
-  return true;
+}
+
+// Broadcasts the message and adds it to the database
+void sendMessage(int authorId, int serverId, string content) {
+  string messageId = createId();
+
+  thread msgThread(broadcastMessage, messageId, authorId, serverId, content);
+  msgThread.detach();
+  thread dbThread(addMessageToDb, messageId, authorId, serverId, content);
+  dbThread.detach();
 }
