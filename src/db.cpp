@@ -6,6 +6,7 @@
 #include <iostream>
 #include <mutex>
 #include <sqlite3.h>
+#include <string.h>
 #include <string>
 
 using namespace std;
@@ -57,4 +58,37 @@ void Database::runSqlFile(string filePath) {
   if (rc != SQLITE_OK) {
     std::cerr << "Error Creating Table - " << sqlite3_errmsg(db) << std::endl;
   }
+}
+
+Statement::Statement(string query, sqlite3 *db) {
+  this->query = query;
+  this->bindCount = 0;
+  this->db = db;
+  int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
+  if (rc != SQLITE_OK) { logError(); }
+}
+
+void Statement::bind(string strVal) {
+  bindCount++;
+  sqlite3_bind_text(stmt, bindCount, strVal.c_str(), strlen(strVal.c_str()), NULL);
+}
+
+void Statement::bind(int intVal) {
+  bindCount++;
+  sqlite3_bind_int(this->stmt, bindCount, intVal);
+}
+
+void Statement::execute() {
+  int rc = sqlite3_step(stmt);
+  if (rc != 101 || rc != 0) { logError(); }
+}
+
+void Statement::finish() {
+  int rc = sqlite3_finalize(stmt);
+  if (rc != 0) { logError(); }
+}
+
+void Statement::logError() {
+  cerr << "Statement error occured: " << sqlite3_errcode(db) << sqlite3_errmsg(db) << endl;
+  cerr << query << endl;
 }

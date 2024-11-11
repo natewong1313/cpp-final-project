@@ -28,4 +28,20 @@ class Database {
     void setupTables();
 };
 
+class Statement {
+  private:
+    sqlite3_stmt *stmt;
+    sqlite3 *db;
+    string query;
+    int bindCount;
+    void logError();
+
+  public:
+    Statement(string query, sqlite3 *db);
+    void bind(string strVal);
+    void bind(int intVal);
+    void execute();
+    void finish();
+};
+
 #endif
