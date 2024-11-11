@@ -2,7 +2,11 @@
 
 ## Pre-Requisites
 
-You'll need sqlite and libuuid installed on your system
+You'll need sqlite installed on your system
+
+```bash
+sudo apt-get install sqlite3
+```
 
 ```bash
 sudo apt-get install sqlite3
