@@ -7,6 +7,7 @@ using namespace std;
 
 string selectUserStmt = "SELECT password FROM users WHERE email=?";
 string insertTokenStmt = "INSERT INTO userTokens(token, user_id) VALUES (?, ?)";
+string deleteTokenStmt = "DELETE FROM userTokens WHERE token=?";
 
 // not gonna hash passwords for now but that is something that should be done in the future
 bool authenticateUser(string email, string password) {
@@ -50,15 +51,28 @@ string createSessionToken(string userId) {
   sqlite3_bind_text(stmt, 2, userId.c_str(), strlen(userId.c_str()), NULL);
 
   rc = sqlite3_step(stmt);
-  if (rc != SQLITE_OK) {
+  if (rc != 101) {
     handleDbError(db);
     return "";
   }
   rc = sqlite3_finalize(stmt);
-  if (rc != SQLITE_OK) {
+  if (rc != 0) {
     handleDbError(db);
     return "";
   }
 
   return sessionToken;
+}
+
+void logoutUser(string sessionToken) {
+  Database *db = Database::getInstance();
+  sqlite3_stmt *stmt;
+  int rc = sqlite3_prepare_v2(db->getConnection(), deleteTokenStmt.c_str(), -1, &stmt, NULL);
+  if (rc != SQLITE_OK) { return handleDbError(db); }
+  sqlite3_bind_text(stmt, 1, sessionToken.c_str(), strlen(sessionToken.c_str()), NULL);
+
+  rc = sqlite3_step(stmt);
+  if (rc != SQLITE_OK) { return handleDbError(db); }
+  rc = sqlite3_finalize(stmt);
+  if (rc != SQLITE_OK) { return handleDbError(db); }
 }

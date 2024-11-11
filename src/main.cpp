@@ -32,6 +32,7 @@ int main() {
 
   string sessionToken = createSessionToken(userId);
   cout << sessionToken << endl;
+  logoutUser(sessionToken);
 
   // svr.Get("/", [](const Request &, Response &res) {
   //   res.set_content(loadHTML("index.html"), "text/html");
