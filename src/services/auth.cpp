@@ -1,7 +1,6 @@
 #include "../db.h"
 #include "../utils.h"
 
-#include <string.h>
 #include <string>
 using namespace std;
 
@@ -12,67 +11,29 @@ string deleteTokenStmt = "DELETE FROM userTokens WHERE token=?";
 // not gonna hash passwords for now but that is something that should be done in the future
 bool authenticateUser(string email, string password) {
   Database *db = Database::getInstance();
-  sqlite3_stmt *stmt;
-  int rc = sqlite3_prepare_v2(db->getConnection(), selectUserStmt.c_str(), -1, &stmt, NULL);
-  if (rc != SQLITE_OK) {
-    handleDbError(db);
-    return false;
-  }
-  sqlite3_bind_text(stmt, 1, email.c_str(), strlen(email.c_str()), NULL);
-
-  rc = sqlite3_step(stmt);
-  if (rc != SQLITE_ROW) {
-    handleDbError(db);
-    return false;
-  }
-
-  string pwToCompare = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-
-  rc = sqlite3_finalize(stmt);
-  if (rc != SQLITE_OK) {
-    handleDbError(db);
-    return false;
-  }
-
+  Statement stmt = db->newStatement(selectUserStmt);
+  stmt.bind(email);
+  stmt.execute();
+  string pwToCompare = stmt.getResultString(1);
+  stmt.finish();
   return pwToCompare.compare(password);
 }
 
 string createSessionToken(string userId) {
   string sessionToken = createId();
-
   Database *db = Database::getInstance();
-  sqlite3_stmt *stmt;
-  int rc = sqlite3_prepare_v2(db->getConnection(), insertTokenStmt.c_str(), -1, &stmt, NULL);
-  if (rc != SQLITE_OK) {
-    handleDbError(db);
-    return "";
-  }
-  sqlite3_bind_text(stmt, 1, sessionToken.c_str(), strlen(sessionToken.c_str()), NULL);
-  sqlite3_bind_text(stmt, 2, userId.c_str(), strlen(userId.c_str()), NULL);
-
-  rc = sqlite3_step(stmt);
-  if (rc != 101) {
-    handleDbError(db);
-    return "";
-  }
-  rc = sqlite3_finalize(stmt);
-  if (rc != 0) {
-    handleDbError(db);
-    return "";
-  }
-
+  Statement stmt = db->newStatement(insertTokenStmt);
+  stmt.bind(sessionToken);
+  stmt.bind(userId);
+  stmt.execute();
+  stmt.finish();
   return sessionToken;
 }
 
 void logoutUser(string sessionToken) {
   Database *db = Database::getInstance();
-  sqlite3_stmt *stmt;
-  int rc = sqlite3_prepare_v2(db->getConnection(), deleteTokenStmt.c_str(), -1, &stmt, NULL);
-  if (rc != SQLITE_OK) { return handleDbError(db); }
-  sqlite3_bind_text(stmt, 1, sessionToken.c_str(), strlen(sessionToken.c_str()), NULL);
-
-  rc = sqlite3_step(stmt);
-  if (rc != SQLITE_OK) { return handleDbError(db); }
-  rc = sqlite3_finalize(stmt);
-  if (rc != SQLITE_OK) { return handleDbError(db); }
+  Statement stmt = db->newStatement(deleteTokenStmt);
+  stmt.bind(sessionToken);
+  stmt.execute();
+  stmt.finish();
 }

@@ -60,12 +60,16 @@ void Database::runSqlFile(string filePath) {
   }
 }
 
+Statement Database::newStatement(string query) {
+  return Statement(query, getConnection());
+}
+
 Statement::Statement(string query, sqlite3 *db) {
   this->query = query;
   this->bindCount = 0;
   this->db = db;
   int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
-  if (rc != SQLITE_OK) { logError(); }
+  if (rc != 0 && rc != 100 && rc != 101) { logError(); }
 }
 
 void Statement::bind(string strVal) {
@@ -80,15 +84,24 @@ void Statement::bind(int intVal) {
 
 void Statement::execute() {
   int rc = sqlite3_step(stmt);
-  if (rc != 101 || rc != 0) { logError(); }
+  if (rc != 0 && rc != 100 && rc != 101) { logError(); }
 }
 
 void Statement::finish() {
   int rc = sqlite3_finalize(stmt);
-  if (rc != 0) { logError(); }
+  if (rc != 0 && rc != 100 && rc != 101) { logError(); }
+}
+
+string Statement::getResultString(int position) {
+  if (sqlite3_column_type(stmt, 1) == SQLITE_NULL) { return ""; }
+  return reinterpret_cast<const char *>(sqlite3_column_text(stmt, position));
+}
+
+int Statement::getResultInt(int position) {
+  return sqlite3_column_int(stmt, position);
 }
 
 void Statement::logError() {
-  cerr << "Statement error occured: " << sqlite3_errcode(db) << sqlite3_errmsg(db) << endl;
-  cerr << query << endl;
+  cerr << "Statement error occured: " << sqlite3_errcode(db) << "||" << sqlite3_errmsg(db) << "||"
+       << query << endl;
 }

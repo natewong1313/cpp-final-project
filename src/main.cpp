@@ -31,9 +31,10 @@ int main() {
   string sessionToken = createSessionToken(userId);
   cout << sessionToken << endl;
   logoutUser(sessionToken);
+  cout << "done" << endl;
 
   bool success = authenticateUser("nate@gmail.com", "Password!");
-  cout << success << endl;
+  cout << "done" << endl;
 
   // svr.Get("/", [](const Request &, Response &res) {
   //   res.set_content(loadHTML("index.html"), "text/html");

@@ -8,6 +8,24 @@ using namespace std;
 
 // https://www.geeksforgeeks.org/implementation-of-singleton-class-in-cpp/
 
+class Statement {
+  private:
+    sqlite3_stmt *stmt;
+    sqlite3 *db;
+    string query;
+    int bindCount;
+    void logError();
+
+  public:
+    Statement(string query, sqlite3 *db);
+    void bind(string strVal);
+    void bind(int intVal);
+    void execute();
+    void finish();
+    string getResultString(int position);
+    int getResultInt(int position);
+};
+
 class Database {
   private:
     static Database *instancePtr;
@@ -26,22 +44,7 @@ class Database {
     sqlite3 *getConnection();
     void cleanup();
     void setupTables();
-};
-
-class Statement {
-  private:
-    sqlite3_stmt *stmt;
-    sqlite3 *db;
-    string query;
-    int bindCount;
-    void logError();
-
-  public:
-    Statement(string query, sqlite3 *db);
-    void bind(string strVal);
-    void bind(int intVal);
-    void execute();
-    void finish();
+    Statement newStatement(string query);
 };
 
 #endif
