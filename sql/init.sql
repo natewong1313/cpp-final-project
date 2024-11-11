@@ -3,7 +3,13 @@ CREATE TABLE IF NOT EXISTS users(
     id TEXT PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL
+    password TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS userTokens(
+    token TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS servers(
