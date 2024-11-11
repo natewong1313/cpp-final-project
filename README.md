@@ -28,3 +28,4 @@ Simply run `make` to get the project running
 - [sqlite docs](https://www.sqlite.org/cintro.html)
 - [sqlite multi-threading](https://www.codeproject.com/Articles/5379574/More-SQLite-Multi-threading)
 - [implementing a singleton class](https://www.geeksforgeeks.org/implementation-of-singleton-class-in-cpp/)
+- [the copenhagen book](https://thecopenhagenbook.com/) guidelines for web auth
