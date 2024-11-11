@@ -5,6 +5,7 @@ find_package(SQLite3 REQUIRED)
 set(SQLITE3_THREADSAFE 1)
 
 include_directories(include ${SQLite3_INCLUDE_DIRS})
+include_directories(include ${ARGON2_INCLUDE_DIR})
 include_directories(include)
-add_executable(main src/main.cpp src/utils.cpp src/db.cpp src/message.cpp src/server.cpp src/services/messaging.cpp src/services/servers.cpp)
+add_executable(main src/main.cpp src/utils.cpp src/db.cpp src/message.cpp src/server.cpp src/services/messaging.cpp src/services/servers.cpp src/services/users.cpp src/services/auth.cpp)
 target_link_libraries(main PRIVATE SQLite::SQLite3)

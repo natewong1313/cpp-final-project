@@ -25,7 +25,8 @@ string loadHTML(string path) {
 }
 
 void handleDbError(Database *db) {
-  cerr << "Db error occured: " << sqlite3_errmsg(db->getConnection()) << endl;
+  cerr << "Db error occured: " << sqlite3_errcode(db->getConnection())
+       << sqlite3_errmsg(db->getConnection()) << endl;
 }
 
 string createId() {
