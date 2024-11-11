@@ -19,20 +19,14 @@ void broadcastMessage(message msg) {
 // Inserts a new message into the database
 void addMessageToDb(message msg) {
   Database *db = Database::getInstance();
-  sqlite3_stmt *stmt;
-  int rc = sqlite3_prepare_v2(db->getConnection(), createMsgStmt.c_str(), -1, &stmt, NULL);
-  if (rc != SQLITE_OK) { return handleDbError(db); }
-
-  sqlite3_bind_text(stmt, 1, msg.id.c_str(), strlen(msg.id.c_str()), NULL);
-  sqlite3_bind_text(stmt, 2, msg.authorId.c_str(), strlen(msg.authorId.c_str()), NULL);
-  sqlite3_bind_text(stmt, 3, msg.serverId.c_str(), strlen(msg.serverId.c_str()), NULL);
-  sqlite3_bind_text(stmt, 4, msg.content.c_str(), strlen(msg.content.c_str()), NULL);
-  sqlite3_bind_int(stmt, 5, time(NULL));
-
-  rc = sqlite3_step(stmt);
-  if (rc != SQLITE_OK) { return handleDbError(db); }
-  rc = sqlite3_finalize(stmt);
-  if (rc != SQLITE_OK) { return handleDbError(db); }
+  Statement stmt = db->newStatement(createMsgStmt);
+  stmt.bind(msg.id);
+  stmt.bind(msg.authorId);
+  stmt.bind(msg.serverId);
+  stmt.bind(msg.content);
+  stmt.bind(time(NULL));
+  stmt.execute();
+  stmt.finish();
 }
 
 // Broadcasts the message and adds it to the database
