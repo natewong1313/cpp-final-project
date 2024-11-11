@@ -1,8 +1,6 @@
 #include "db.h"
 #include "httplib.h"
 #include "json.hpp"
-#include "message.h"
-#include "server.h"
 #include "services/auth.h"
 #include "services/messaging.h"
 #include "services/servers.h"
