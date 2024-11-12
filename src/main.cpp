@@ -25,29 +25,28 @@ int main() {
   // sendMessage(1, 1, "Test message");
 
   // createServer("testUser", "Nates new server");
-  string userId = createUser("nate", "nate@gmail.com", "Password!");
-  cout << "user id" << userId << endl;
+  // string userId = createUser("nate", "nate@gmail.com", "Password!");
+  // cout << "user id" << userId << endl;
 
-  string sessionToken = createSessionToken(userId);
-  cout << sessionToken << endl;
-  logoutUser(sessionToken);
-  cout << "done" << endl;
+  // string sessionToken = createSessionToken(userId);
+  // cout << sessionToken << endl;
+  // logoutUser(sessionToken);
+  // cout << "done" << endl;
 
-  bool success = authenticateUser("nate@gmail.com", "Password!");
-  cout << "done" << endl;
+  // bool success = authenticateUser("nate@gmail.com", "Password!");
+  // cout << "done" << endl;
 
-  // svr.Get("/", [](const Request &, Response &res) {
-  //   res.set_content(loadHTML("index.html"), "text/html");
-  // });
-  // svr.Get("/server", [](const Request &, Response &res) {
-  //   res.set_content(loadHTML("server.html"), "text/html");
-  // });
+  svr.Get("/", [](const Request &, Response &res) {
+    res.set_content(loadHTML("index.html"), "text/html");
+  });
+  svr.Get("/server", [](const Request &, Response &res) {
+    res.set_content(loadHTML("server.html"), "text/html");
+  });
 
-  // svr.Get("/api/servers", [](const Request &, Response &res) {
-  //   json j;
-  //   j["servers"] = loadChatServersFromDb();
-  //   res.set_content(to_string(j), "application/json");
-  // });
+  svr.Get("/api/servers", [](const Request &, Response &res) {
+    json j = json{"servers", getServers()};
+    res.set_content(to_string(j), "application/json");
+  });
   // svr.Get("/api/messages", [](const Request &req, Response &res) {
   //   if (!req.has_param("server")) {
   //     res.set_content("{\"error\": \"missing server id\"}", "application/json");
@@ -69,7 +68,7 @@ int main() {
   //   // j["messages"] = loadMessagesFromDb(serverId);
   //   res.set_content(to_string(j), "application/json");
   // });
-  // cout << "Server running on port 8080" << endl;
-  // svr.listen("0.0.0.0", 8080);
+  cout << "Server running on port 8080" << endl;
+  svr.listen("0.0.0.0", 8080);
   return 0;
 }

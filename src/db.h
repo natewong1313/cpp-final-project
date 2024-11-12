@@ -21,6 +21,7 @@ class Statement {
     void bind(string strVal);
     void bind(int intVal);
     void execute();
+    int step();
     void finish();
     string getResultString(int position);
     int getResultInt(int position);

@@ -1,7 +1,10 @@
 #ifndef SERVERS_H
 #define SERVERS_H
 
+#include "json.hpp"
+
 #include <string>
+using json = nlohmann::json;
 using namespace std;
 
 struct server {
@@ -11,5 +14,6 @@ struct server {
 };
 
 void createServer(string adminId, string name);
+vector<json> getServers();
 
 #endif

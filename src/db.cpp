@@ -87,13 +87,17 @@ void Statement::execute() {
   if (rc != 0 && rc != 100 && rc != 101) { logError(); }
 }
 
+int Statement::step() {
+  return sqlite3_step(stmt);
+}
+
 void Statement::finish() {
   int rc = sqlite3_finalize(stmt);
   if (rc != 0 && rc != 100 && rc != 101) { logError(); }
 }
 
 string Statement::getResultString(int position) {
-  if (sqlite3_column_type(stmt, 1) == SQLITE_NULL) { return ""; }
+  if (sqlite3_column_type(stmt, position) == SQLITE_NULL) { return ""; }
   return reinterpret_cast<const char *>(sqlite3_column_text(stmt, position));
 }
 
