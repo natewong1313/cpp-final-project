@@ -11,7 +11,6 @@ string selectUserByEmailStmt = "SELECT id FROM users WHERE email=?";
 
 string createUser(string username, string email, string password) {
   string userId = createId();
-  cout << userId << endl;
   Database *db = Database::getInstance();
   Statement stmt = db->newStatement(insertuserStmt);
   stmt.bind(userId);

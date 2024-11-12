@@ -47,11 +47,10 @@ int main() {
     res.set_content(loadHTML("server.html"), "text/html");
   });
 
-  svr.Post("/api/login", [](const Request &req, Response &res) {
+  svr.Post("/api/signin", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
 
     bool success = authenticateUser(j["email"], j["password"]);
-    cout << "success" << success << endl;
     if (!success) {
       res.set_content(to_string(json{
                         {"error", "Invalid email or password"}
@@ -61,6 +60,21 @@ int main() {
       return;
     }
     string userId = getUserIdByEmail(j["email"]);
+    string sessionToken = createSessionToken(userId);
+    res.set_header("Set-Cookie", getCookieString(sessionToken));
+  });
+  svr.Post("/api/signup", [](const Request &req, Response &res) {
+    json j = json::parse(req.body);
+
+    string userId = createUser(j["username"], j["email"], j["password"]);
+    if (!userId.compare("")) {
+      res.set_content(to_string(json{
+                        {"error", "User already exists"}
+      }),
+                      "application/json");
+      res.status = 400;
+      return;
+    }
     string sessionToken = createSessionToken(userId);
     res.set_header("Set-Cookie", getCookieString(sessionToken));
   });
