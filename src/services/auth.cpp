@@ -18,7 +18,8 @@ bool authenticateUser(string email, string password) {
   stmt.execute();
   string pwToCompare = stmt.getResultString(0);
   stmt.finish();
-  return !pwToCompare.compare(password);
+  if (pwToCompare == "") { return false; }
+  return pwToCompare == password;
 }
 
 string createSessionToken(string userId) {
@@ -51,5 +52,5 @@ string getCookieString(string sessionToken) {
 
 bool isAuthenticatedReq(const Request &req) {
   if (!req.has_header("Cookie")) { return false; }
-  return req.get_header_value("Cookie").compare("");
+  return req.get_header_value("Cookie") != "";
 }

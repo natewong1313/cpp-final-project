@@ -18,26 +18,26 @@
     </style>
   </head>
 
-  <body class="bg-gray-950 p-8 text-white flex items-center flex-col">
+  <body class="bg-stone-50 p-8 flex items-center flex-col">
     <h1 class="text-2xl font-semibold">
       Welcome to <span class="italic">Not Discord</span>
     </h1>
-    <p class="text-gray-300">Please login to continue</p>
-    <div class="w-96 bg-gray-900 rounded-lg p-6 mt-6">
+    <p class="text-stone-600">Please login to continue</p>
+    <div class="w-96 bg-stone-200 rounded-lg p-6 mt-6">
       <form id="signinForm" class="flex flex-col" onsubmit="signin(event)">
         <label class="text-sm">Email address</label>
         <input
           name="email"
           type="email"
           placeholder="Email"
-          class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-gray-700 ring-2 p-2 focus:outline-none focus:ring-pink-400"
+          class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-stone-400 ring-2 p-2 focus:outline-none focus:ring-pink-400"
         />
         <label class="text-sm mt-3">Password</label>
         <input
           name="password"
           type="password"
           placeholder="Password"
-          class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-gray-700 ring-2 p-2 focus:outline-none focus:ring-pink-400"
+          class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-stone-400 ring-2 p-2 focus:outline-none focus:ring-pink-400"
         />
         <button
           id="signinButton"
@@ -46,7 +46,7 @@
           Login
         </button>
         <p id="signinErrMsg" class="text-red-500 text-sm mt-2"></p>
-        <p class="text-sm mt-3 text-gray-300">
+        <p class="text-sm mt-3 text-stone-600">
           Don't have an account?
           <button type="button" class="underline" onclick="showSignup()">
             Sign up
@@ -63,21 +63,21 @@
         <input
           name="username"
           placeholder="Username"
-          class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-gray-700 ring-2 p-2 focus:outline-none focus:ring-pink-400"
+          class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-stone-400 ring-2 p-2 focus:outline-none focus:ring-pink-400"
         />
         <label class="text-sm mt-3">Email address</label>
         <input
           name="email"
           type="email"
           placeholder="Email"
-          class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-gray-700 ring-2 p-2 focus:outline-none focus:ring-pink-400"
+          class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-stone-400 ring-2 p-2 focus:outline-none focus:ring-pink-400"
         />
         <label class="text-sm mt-3">Password</label>
         <input
           name="password"
           type="password"
           placeholder="Password"
-          class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-gray-700 ring-2 p-2 focus:outline-none focus:ring-pink-400"
+          class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-stone-400 ring-2 p-2 focus:outline-none focus:ring-pink-400"
         />
         <button
           id="signupButton"
@@ -86,7 +86,7 @@
           Sign up
         </button>
         <p id="signupErrMsg" class="text-red-500 text-sm mt-2"></p>
-        <p class="text-sm mt-3 text-gray-300">
+        <p class="text-sm mt-3 text-stone-600">
           Need an account?
           <button type="button" class="underline" onclick="showSignin()">
             Sign in
