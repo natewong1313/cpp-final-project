@@ -37,7 +37,11 @@ int main() {
   // bool success = authenticateUser("nate@gmail.com", "Password!");
   // cout << "done" << endl;
 
-  svr.Get("/", [](const Request &, Response &res) {
+  svr.Get("/", [](const Request &req, Response &res) {
+    if (!isAuthenticatedReq(req)) {
+      res.set_redirect("/login");
+      return;
+    }
     res.set_content(loadHTML("index.html"), "text/html");
   });
   svr.Get("/login", [](const Request &, Response &res) {

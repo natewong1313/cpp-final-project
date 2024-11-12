@@ -1,7 +1,9 @@
 #include "../db.h"
 #include "../utils.h"
+#include "httplib.h"
 
 #include <string>
+using namespace httplib;
 using namespace std;
 
 string selectUserStmt = "SELECT password FROM users WHERE email=?";
@@ -45,4 +47,9 @@ string getCookieString(string sessionToken) {
   char expiration[256];
   strftime(expiration, sizeof(expiration), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&expiry));
   return "token=" + sessionToken + "; Expires=" + expiration + "; Path=/";
+}
+
+bool isAuthenticatedReq(const Request &req) {
+  if (!req.has_header("Cookie")) { return false; }
+  return req.get_header_value("Cookie").compare("");
 }
