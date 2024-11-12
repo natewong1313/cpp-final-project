@@ -14,7 +14,7 @@ bool authenticateUser(string email, string password) {
   Statement stmt = db->newStatement(selectUserStmt);
   stmt.bind(email);
   stmt.execute();
-  string pwToCompare = stmt.getResultString(1);
+  string pwToCompare = stmt.getResultString(0);
   stmt.finish();
   return pwToCompare.compare(password);
 }

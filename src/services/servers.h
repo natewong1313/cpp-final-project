@@ -13,7 +13,7 @@ struct server {
     string name;
 };
 
-void createServer(string adminId, string name);
+string createServer(string adminId, string name);
 vector<json> getServers();
 
 #endif

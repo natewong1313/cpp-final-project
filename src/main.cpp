@@ -25,8 +25,8 @@ int main() {
   // sendMessage(1, 1, "Test message");
 
   // createServer("testUser", "Nates new server");
-  // string userId = createUser("nate", "nate@gmail.com", "Password!");
-  // cout << "user id" << userId << endl;
+  string userId = createUser("nate2", "nate@gmail.com", "Password!");
+  cout << "user id" << userId << endl;
 
   // string sessionToken = createSessionToken(userId);
   // cout << sessionToken << endl;
@@ -44,8 +44,20 @@ int main() {
   });
 
   svr.Get("/api/servers", [](const Request &, Response &res) {
-    json j = json{"servers", getServers()};
+    json j = json{
+      {"servers", getServers()}
+    };
     res.set_content(to_string(j), "application/json");
+  });
+  svr.Post("/api/servers/new", [](const Request &req, Response &res) {
+    json j = json::parse(req.body);
+    string userId = getUserIdByEmail("nate@gmail.com");
+    cout << userId << "user id" << endl;
+    string serverId = createServer(userId, j["name"]);
+    json resJson = json{
+      {"id", serverId}
+    };
+    res.set_content(to_string(resJson), "application/json");
   });
   // svr.Get("/api/messages", [](const Request &req, Response &res) {
   //   if (!req.has_param("server")) {

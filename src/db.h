@@ -25,6 +25,7 @@ class Statement {
     void finish();
     string getResultString(int position);
     int getResultInt(int position);
+    sqlite3_stmt *getStmt();
 };
 
 class Database {

@@ -74,7 +74,7 @@ Statement::Statement(string query, sqlite3 *db) {
 
 void Statement::bind(string strVal) {
   bindCount++;
-  sqlite3_bind_text(stmt, bindCount, strVal.c_str(), strlen(strVal.c_str()), NULL);
+  sqlite3_bind_text(stmt, bindCount, strVal.c_str(), -1, SQLITE_TRANSIENT);
 }
 
 void Statement::bind(int intVal) {
@@ -108,4 +108,8 @@ int Statement::getResultInt(int position) {
 void Statement::logError() {
   cerr << "Statement error occured: " << sqlite3_errcode(db) << "||" << sqlite3_errmsg(db) << "||"
        << query << endl;
+}
+
+sqlite3_stmt *Statement::getStmt() {
+  return this->stmt;
 }

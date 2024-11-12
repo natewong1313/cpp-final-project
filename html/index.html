@@ -7,6 +7,11 @@
     <h1>Hola</h1>
     <h1>Available servers are:</h1>
     <ul id="servers"></ul>
+    <h1>Create a server</h1>
+    <form id="createServerForm">
+      <input id="serverName" placeholder="Server name" />
+      <button type="submit">Create</button>
+    </form>
   </body>
 
   <script>
@@ -30,5 +35,19 @@
         serversList.appendChild(addServerLinkToDom(server));
       });
     });
+    document
+      .getElementById("createServerForm")
+      .addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const response = await fetch("/api/servers/new", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: document.getElementById("serverName").value,
+          }),
+        });
+      });
   </script>
 </html>
