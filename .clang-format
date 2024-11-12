@@ -52,7 +52,6 @@ AlignConsecutiveDeclarations: None
 PointerAlignment: Right
 QualifierAlignment: Left
 ReferenceAlignment: Right
-AlignArrayOfStructures: Right
 
 UseTab: Never
 SpacesInAngles: Never

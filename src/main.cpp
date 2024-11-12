@@ -53,13 +53,9 @@ int main() {
 
   svr.Post("/api/signin", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
-
     bool success = authenticateUser(j["email"], j["password"]);
     if (!success) {
-      res.set_content(to_string(json{
-                        {"error", "Invalid email or password"}
-      }),
-                      "application/json");
+      res.set_content(to_string(json{{"error", "Invalid email or password"}}), "application/json");
       res.status = 400;
       return;
     }
@@ -69,13 +65,9 @@ int main() {
   });
   svr.Post("/api/signup", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
-
     string userId = createUser(j["username"], j["email"], j["password"]);
     if (!userId.compare("")) {
-      res.set_content(to_string(json{
-                        {"error", "User already exists"}
-      }),
-                      "application/json");
+      res.set_content(to_string(json{{"error", "User already exists"}}), "application/json");
       res.status = 400;
       return;
     }
@@ -84,9 +76,7 @@ int main() {
   });
 
   svr.Get("/api/servers", [](const Request &, Response &res) {
-    json j = json{
-      {"servers", getServers()}
-    };
+    json j = json{{"servers", getServers()}};
     res.set_content(to_string(j), "application/json");
   });
   svr.Post("/api/servers/new", [](const Request &req, Response &res) {
@@ -94,9 +84,7 @@ int main() {
     string userId = getUserIdByEmail("nate@gmail.com");
     cout << userId << "user id" << endl;
     string serverId = createServer(userId, j["name"]);
-    json resJson = json{
-      {"id", serverId}
-    };
+    json resJson = json{{"id", serverId}};
     res.set_content(to_string(resJson), "application/json");
   });
   // svr.Get("/api/messages", [](const Request &req, Response &res) {
