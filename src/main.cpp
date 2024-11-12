@@ -25,8 +25,9 @@ int main() {
   // sendMessage(1, 1, "Test message");
 
   // createServer("testUser", "Nates new server");
-  string userId = createUser("nate2", "nate@gmail.com", "Password!");
-  cout << "user id" << userId << endl;
+
+  // string userId = createUser("nate2", "nate@gmail.com", "Password!");
+  // cout << "user id" << userId << endl;
 
   // string sessionToken = createSessionToken(userId);
   // cout << sessionToken << endl;
@@ -39,8 +40,29 @@ int main() {
   svr.Get("/", [](const Request &, Response &res) {
     res.set_content(loadHTML("index.html"), "text/html");
   });
+  svr.Get("/login", [](const Request &, Response &res) {
+    res.set_content(loadHTML("login.html"), "text/html");
+  });
   svr.Get("/server", [](const Request &, Response &res) {
     res.set_content(loadHTML("server.html"), "text/html");
+  });
+
+  svr.Post("/api/login", [](const Request &req, Response &res) {
+    json j = json::parse(req.body);
+
+    bool success = authenticateUser(j["email"], j["password"]);
+    cout << "success" << success << endl;
+    if (!success) {
+      res.set_content(to_string(json{
+                        {"error", "Invalid email or password"}
+      }),
+                      "application/json");
+      res.status = 400;
+      return;
+    }
+    string userId = getUserIdByEmail(j["email"]);
+    string sessionToken = createSessionToken(userId);
+    res.set_header("Set-Cookie", getCookieString(sessionToken));
   });
 
   svr.Get("/api/servers", [](const Request &, Response &res) {

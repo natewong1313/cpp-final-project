@@ -16,7 +16,7 @@ bool authenticateUser(string email, string password) {
   stmt.execute();
   string pwToCompare = stmt.getResultString(0);
   stmt.finish();
-  return pwToCompare.compare(password);
+  return !pwToCompare.compare(password);
 }
 
 string createSessionToken(string userId) {
@@ -36,4 +36,13 @@ void logoutUser(string sessionToken) {
   stmt.bind(sessionToken);
   stmt.execute();
   stmt.finish();
+}
+
+int weekExpiry = 7 * 24 * 60 * 60;
+
+string getCookieString(string sessionToken) {
+  time_t expiry = time(0) + weekExpiry;
+  char expiration[256];
+  strftime(expiration, sizeof(expiration), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&expiry));
+  return "token=" + sessionToken + "; Expires=" + expiration + "; Path=/";
 }

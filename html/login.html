@@ -24,7 +24,7 @@
     </h1>
     <p class="text-gray-300">Please login to continue</p>
     <div class="w-96 bg-gray-900 rounded-lg p-6 mt-6">
-      <form id="signinForm" class="flex flex-col">
+      <form id="signinForm" class="flex flex-col" onsubmit="signin(event)">
         <label class="text-sm">Email address</label>
         <input
           name="email"
@@ -42,6 +42,7 @@
         <button class="mt-4 bg-pink-500 rounded-md h-10 hover:bg-pink-600">
           Login
         </button>
+        <p id="signinErrMsg" class="text-red-500 text-sm mt-2"></p>
         <p class="text-sm mt-3 text-gray-300">
           Don't have an account?
           <button type="button" class="underline" onclick="showSignup()">
@@ -71,8 +72,9 @@
           class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-gray-700 ring-2 p-2 focus:outline-none focus:ring-pink-400"
         />
         <button class="mt-4 bg-pink-500 rounded-md h-10 hover:bg-pink-600">
-          Login
+          Sign up
         </button>
+        <p id="signupErrMsg" class="text-red-500 text-sm mt-2"></p>
         <p class="text-sm mt-3 text-gray-300">
           Need an account?
           <button type="button" class="underline" onclick="showSignin()">
@@ -86,10 +88,37 @@
     function showSignup() {
       document.getElementById("signinForm").style.display = "none";
       document.getElementById("signupForm").style.display = "flex";
+      clearErrMsgs();
     }
     function showSignin() {
       document.getElementById("signupForm").style.display = "none";
       document.getElementById("signinForm").style.display = "flex";
+      clearErrMsgs();
+    }
+    function clearErrMsgs() {
+      document.getElementById("signinErrMsg").innerHTML = "";
+      document.getElementById("signupErrMsg").innerHTML = "";
+    }
+    async function signin(e) {
+      clearErrMsgs();
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.get("email"),
+          password: formData.get("password"),
+        }),
+      });
+      if (!response.ok) {
+        const responseJson = await response.json();
+        console.log(responseJson["error"]);
+        document.getElementById("signinErrMsg").innerHTML =
+          responseJson["error"];
+      }
     }
   </script>
 </html>
