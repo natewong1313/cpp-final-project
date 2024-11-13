@@ -22,7 +22,7 @@
       Welcome to <span class="italic">Not Discord</span>
     </h1>
     <p class="text-stone-600">View the available servers below</p>
-    <div id="servers" class="my-12">
+    <div id="servers" class="my-10">
       <p>No servers found</p>
     </div>
     <p class="text-stone-600">Don't see one you like?</p>
@@ -63,6 +63,29 @@
   </body>
 
   <script>
+    async function getServers() {
+      const res = await fetch("/api/servers");
+      return (await res.json())["servers"];
+    }
+    const serversData = getServers();
+
+    function addServerToDom(server) {
+      const serverElement = document.createElement("a");
+      serverElement.href = `/server?id=${server.id}`;
+      serverElement.textContent = server.name;
+      serverElement.className =
+        "mb-2 p-2 bg-stone-100 border border-stone-300 block cursor-pointer hover:bg-stone-200";
+      document.getElementById("servers").appendChild(serverElement);
+    }
+
+    document.addEventListener("DOMContentLoaded", async function () {
+      const servers = await serversData;
+      if (servers.length > 0) {
+        document.getElementById("servers").innerHTML = "";
+        servers.forEach(addServerToDom);
+      }
+    });
+
     document
       .getElementById("serverForm")
       .addEventListener("submit", async function (e) {
@@ -84,10 +107,12 @@
         }
         button.disabled = false;
       });
+
     function showServerForm() {
       document.getElementById("serverForm").style.display = "flex";
       document.getElementById("showServerFormButton").style.display = "none";
     }
+
     function hideServerForm() {
       document.getElementById("serverForm").style.display = "none";
       document.getElementById("showServerFormButton").style.display = "block";
