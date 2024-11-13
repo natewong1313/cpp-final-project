@@ -1,17 +1,64 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>cpp proj</title>
+    <title>Not Discord</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+      @layer base {
+        html {
+          font-family: "Geist Mono", system-ui, sans-serif;
+        }
+      }
+    </style>
   </head>
-  <body>
-    <h1>Hola</h1>
+  <body class="bg-stone-50 flex items-center flex-col p-12">
+    <h1 class="text-2xl font-semibold">
+      Welcome to <span class="italic">Not Discord</span>
+    </h1>
+    <p class="text-stone-600">View the available servers below</p>
+    <div id="servers" class="my-12">
+      <p>No servers found</p>
+    </div>
+    <p class="text-stone-600">Don't see one you like?</p>
+    <button
+      id="showServerFormButton"
+      class="px-4 mt-3 bg-amber-500 rounded-md h-10 hover:bg-amber-600"
+      onclick="showServerForm()"
+    >
+      Create a server
+    </button>
+    <form
+      id="serverForm"
+      class="rounded-md border border-stone-300 flex flex-col p-4 mt-4"
+      style="display: none"
+    >
+      <label class="text-sm">Server Name</label>
+      <input
+        name="serverName"
+        placeholder="Name"
+        class="mt-2 bg-transparent text-sm h-9 rounded-md ring ring-stone-400 ring-2 p-2 focus:outline-none focus:ring-amber-400"
+      />
+      <button
+        id="createServerButton"
+        class="mt-4 bg-amber-500 rounded-md h-9 hover:bg-amber-600 text-sm"
+      >
+        Create
+      </button>
+    </form>
+    <!-- <h1>Hola</h1>
     <h1>Available servers are:</h1>
     <ul id="servers"></ul>
     <h1>Create a server</h1>
     <form id="createServerForm">
       <input id="serverName" placeholder="Server name" />
       <button type="submit">Create</button>
-    </form>
+    </form> -->
   </body>
 
   <script>
@@ -49,5 +96,10 @@
           }),
         });
       });
+    function showServerForm() {
+      const serverForm = document.getElementById("serverForm");
+      serverForm.style.display =
+        serverForm.style.display === "flex" ? "none" : "flex";
+    }
   </script>
 </html>
