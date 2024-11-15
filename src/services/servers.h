@@ -1,6 +1,7 @@
 #ifndef SERVERS_H
 #define SERVERS_H
 
+#include "../db.h"
 #include "json.hpp"
 
 #include <string>
@@ -15,5 +16,7 @@ struct server {
 
 string createServer(string adminId, string name);
 vector<json> getServers();
+json dbResultToJson(Statement stmt);
+json getServer(string serverId);
 
 #endif

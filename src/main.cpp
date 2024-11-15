@@ -44,7 +44,7 @@ int main() {
     }
     res.set_content(loadHTML("index.html"), "text/html");
   });
-  svr.Get("/login", [](const Request &, Response &res) {
+  svr.Get("/login", [](const Request &req, Response &res) {
     res.set_content(loadHTML("login.html"), "text/html");
   });
   svr.Get("/server", [](const Request &, Response &res) {
@@ -87,27 +87,34 @@ int main() {
     json resJson = json{{"id", serverId}};
     res.set_content(to_string(resJson), "application/json");
   });
-  // svr.Get("/api/messages", [](const Request &req, Response &res) {
-  //   if (!req.has_param("server")) {
-  //     res.set_content("{\"error\": \"missing server id\"}", "application/json");
-  //     return;
-  //   }
-  //   int serverId = atoi(req.get_param_value("server").c_str());
+  svr.Get("/api/server", [](const Request &req, Response &res) {
+    if (!req.has_param("id")) {
+      res.set_content(to_string(json{{"error", "Missing server id"}}), "application/json");
+      res.status = 400;
+      return;
+    }
+    json serverData = getServer(req.get_param_value("id"));
+    res.set_content(to_string(serverData), "application/json");
+  });
+  svr.Get("/api/messages", [](const Request &req, Response &res) {
+    if (!req.has_param("server")) {
+      res.set_content(to_string(json{{"error", "Missing server id"}}), "application/json");
+      res.status = 400;
+      return;
+    }
+    json messagesData = getMessages(req.get_param_value("id"));
+    res.set_content(to_string(messagesData), "application/json");
+  });
+  svr.Post("/api/messages/new", [](const Request &req, Response &res) {
+    json j = json::parse(req.body);
+    string sessionToken = getTokenFromReq(req);
+    // string userId = getUserIdByEmail("nate@gmail.com");
 
-  //   ChatServer server = ChatServer(serverId);
-  //   cout << server.toJson() << endl;
+    // string serverId = createServer(userId, j["name"]);
+    // json resJson = json{{"id", serverId}};
+    res.set_content(to_string(json{sessionToken}), "application/json");
+  });
 
-  //   json j;
-  //   j["messages"] = loadMessagesFromDb(serverId);
-  //   res.set_content(to_string(j), "application/json");
-  // });
-  // svr.Post("/api/message", [](const Request &req, Response &res) {
-  //   cout << req.body << endl;
-  //   // int serverId = atoi(req.get_param_value("server").c_str());
-  //   json j;
-  //   // j["messages"] = loadMessagesFromDb(serverId);
-  //   res.set_content(to_string(j), "application/json");
-  // });
   cout << "Server running on port 8080" << endl;
   svr.listen("0.0.0.0", 8080);
   return 0;

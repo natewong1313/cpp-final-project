@@ -9,6 +9,7 @@ using namespace std;
 string selectUserStmt = "SELECT password FROM users WHERE email=?";
 string insertTokenStmt = "INSERT INTO userTokens(token, user_id) VALUES (?, ?)";
 string deleteTokenStmt = "DELETE FROM userTokens WHERE token=?";
+string selectUserFromTokenStmt = "SELECT user_id FROM userTokens WHERE token=?";
 
 // not gonna hash passwords for now but that is something that should be done in the future
 bool authenticateUser(string email, string password) {
@@ -53,4 +54,24 @@ string getCookieString(string sessionToken) {
 bool isAuthenticatedReq(const Request &req) {
   if (!req.has_header("Cookie")) { return false; }
   return req.get_header_value("Cookie") != "";
+}
+
+string getTokenFromReq(const Request &req) {
+  if (!isAuthenticatedReq(req)) { return ""; }
+  string cookieHeader = req.get_header_value("Cookie");
+  int startPos = cookieHeader.find("token=") + 6;
+  int endPos = cookieHeader.find(";", startPos);
+  // if the header only has one cookie
+  if (endPos == -1) { return cookieHeader.substr(startPos); }
+  return cookieHeader.substr(startPos, endPos - 6);
+}
+
+string getUserIdFromToken(string sessionToken) {
+  Database *db = Database::getInstance();
+  Statement stmt = db->newStatement(selectUserFromTokenStmt);
+  stmt.bind(sessionToken);
+  stmt.execute();
+  string userId = stmt.getResultString(0);
+  stmt.finish();
+  return userId;
 }

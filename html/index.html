@@ -2,6 +2,11 @@
 <html>
   <head>
     <title>Not Discord</title>
+    <link
+      rel="icon"
+      type="image/jpeg"
+      href="https://i.imgur.com/NMChnN8.jpeg"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -44,7 +49,7 @@
         id="serverName"
         placeholder="Name"
         required
-        class="mt-2 bg-transparent text-sm h-9 ring ring-stone-300 ring-2 p-2 focus:outline-none focus:ring-amber-400"
+        class="mt-2 bg-transparent text-sm h-9 ring ring-stone-300 ring-1 p-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
       />
       <button
         id="createServerButton"
@@ -74,7 +79,7 @@
       serverElement.href = `/server?id=${server.id}`;
       serverElement.textContent = server.name;
       serverElement.className =
-        "mb-2 p-2 bg-stone-100 border border-stone-300 block cursor-pointer hover:bg-stone-200";
+        "mb-2 p-2 bg-stone-100 border border-stone-300 block cursor-pointer hover:bg-stone-200 text-center";
       document.getElementById("servers").appendChild(serverElement);
     }
 

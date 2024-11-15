@@ -12,5 +12,6 @@ string createSessionToken(string userId);
 void logoutUser(string sessionToken);
 string getCookieString(string sessionToken);
 bool isAuthenticatedReq(const Request &req);
+string getTokenFromReq(const Request &req);
 
 #endif

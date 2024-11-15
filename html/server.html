@@ -1,16 +1,77 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>cpp proj</title>
+    <title>Not Discord</title>
+    <link
+      rel="icon"
+      type="image/jpeg"
+      href="https://i.imgur.com/NMChnN8.jpeg"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+      @layer base {
+        html {
+          font-family: "Geist Mono", system-ui, sans-serif;
+        }
+      }
+    </style>
   </head>
-  <body>
-    <h1>Server</h1>
-    <a href="/">Back</a>
-    <ul id="messages"></ul>
-    <form id="messageForm">
-      <input id="content" />
-      <button type="submit">Send message</button>
-    </form>
+  <body class="bg-stone-50 flex h-screen">
+    <div class="w-64 bg-stone-100 h-full border-r border-stone-300 p-2">
+      <a href="/" class="text-sm"><- Home</a>
+      <h1 class="font-semibold my-3 text-lg" id="serverName"></h1>
+      <div class="text-sm flex flex-col space-y-2">
+        <a href="#" class="bg-stone-200 p-2">General</a>
+        <a href="#" class="hover:bg-stone-200/50 p-2">Random</a>
+      </div>
+    </div>
+    <div class="flex flex-col flex-1 h-full p-6">
+      <p class="text-xl">Messages</p>
+      <div class="space-y-4 mt-4 flex flex-col">
+        <div class="max-w-[50%]">
+          <p class="text-xs">Nate | 11/13/24 at 10:45</p>
+          <p class="mt-1 text-sm border border-stone-200 bg-stone-100 p-2">
+            Test message
+          </p>
+        </div>
+        <div class="ml-auto min-w-[50%]">
+          <p class="text-xs text-right">11/13/24 at 10:45</p>
+          <p class="mt-1 text-sm border border-stone-200 bg-stone-100 p-2">
+            Test message
+          </p>
+        </div>
+        <div class="max-w-[50%]">
+          <p class="text-xs">Nate | 11/13/24 at 10:45</p>
+          <p class="mt-1 text-sm border border-stone-200 bg-stone-100 p-2">
+            Test message
+          </p>
+        </div>
+      </div>
+      <div class="relative w-full h-full">
+        <form
+          class="absolute bottom-0 w-full flex gap-1"
+          onsubmit="newMessage(event)"
+        >
+          <input
+            id="messageInput"
+            class="flex flex-1 bg-stone-100 px-2 border border-stone-300 focus:outline-none focus:ring-1 ring-amber-400"
+            placeholder="Enter your message"
+          />
+          <button
+            id="sendButton"
+            class="px-4 w-48 bg-amber-500 h-10 hover:bg-amber-600"
+          >
+            Send
+          </button>
+        </form>
+      </div>
+    </div>
   </body>
 
   <script>
@@ -21,21 +82,40 @@
     async function getMessages() {
       const resp = await fetch(`/api/messages?server=${serverId}`);
       const jsonResp = await resp.json();
-      return jsonResp["messages"];
+      return jsonResp;
     }
-    // TODO: obv this doesnt work but eagerly fetch messages before dom finishes
-    const messages = await getMessages();
+    const messagesResult = getMessages();
+    async function getServerData() {
+      const resp = await fetch(`/api/server?id=${serverId}`);
+      const jsonResp = await resp.json();
+      return jsonResp;
+    }
+    const serverDataResult = getServerData();
 
-    function addMessageToDom(message) {
-      const li = document.createElement("li");
-      li.textContent = `${message.content}`;
-      return li;
-    }
     document.addEventListener("DOMContentLoaded", async function () {
-      const messagesList = document.getElementById("messages");
-      messages.forEach((message) => {
-        messagesList.appendChild(addMessageToDom(message));
-      });
+      const messages = await messagesResult;
+
+      const serverData = await serverDataResult;
+      document.getElementById("serverName").textContent = serverData["name"];
     });
+    async function newMessage(e) {
+      e.preventDefault();
+      const button = document.getElementById("sendButton");
+      button.disabled = true;
+      const messageInput = document.getElementById("messageInput");
+      const response = await fetch("/api/messages/new", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: messageInput.value,
+        }),
+      });
+      if (response.ok) {
+        messageInput.value = "";
+      }
+      button.disabled = false;
+    }
   </script>
 </html>
