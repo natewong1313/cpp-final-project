@@ -21,7 +21,7 @@ vector<json> getMessages(string serverId) {
   stmt.bind(serverId);
   while (stmt.step() == SQLITE_ROW) {
     messages.push_back(json{{"id", stmt.getResultString(0)},
-                            {"authotId", stmt.getResultString(1)},
+                            {"authorId", stmt.getResultString(1)},
                             {"serverId", stmt.getResultString(2)},
                             {"content", stmt.getResultString(3)},
                             {"createdAt", stmt.getResultInt(4)}});
@@ -43,22 +43,24 @@ void addMessageToDb(message msg) {
   stmt.bind(msg.authorId);
   stmt.bind(msg.serverId);
   stmt.bind(msg.content);
-  stmt.bind(time(NULL));
+  stmt.bind(msg.createdAt);
   stmt.execute();
   stmt.finish();
 }
 
 // Broadcasts the message and adds it to the database
-void sendMessage(string authorId, string serverId, string content) {
-  message msg = {
-    createId(),
-    authorId,
-    serverId,
-    content,
-  };
+json sendMessage(string authorId, string serverId, string content) {
+  string messageId = createId();
+  int createdAt = time(NULL);
+  message msg = {messageId, authorId, serverId, content, createdAt};
 
   thread msgThread(broadcastMessage, msg);
   msgThread.detach();
   thread dbThread(addMessageToDb, msg);
   dbThread.detach();
+  return json{{"id", messageId},
+              {"authorId", authorId},
+              {"serverId", serverId},
+              {"content", content},
+              {"createdAt", createdAt}};
 }

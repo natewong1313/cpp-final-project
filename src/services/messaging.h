@@ -13,11 +13,12 @@ struct message {
     string authorId;
     string serverId;
     string content;
+    int createdAt;
 };
 
 vector<json> getMessages(string serverId);
 void broadcastMessage(message msg);
 void addMessageToDb(message msg);
-void sendMessage(string authorId, string serverId, string content);
+json sendMessage(string authorId, string serverId, string content);
 
 #endif

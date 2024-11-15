@@ -75,6 +75,12 @@ int main() {
     res.set_header("Set-Cookie", getCookieString(sessionToken));
   });
 
+  svr.Get("/api/user", [](const Request &req, Response &res) {
+    string sessionToken = getTokenFromReq(req);
+    string userId = getUserIdFromToken(sessionToken);
+    res.set_content(to_string(json{{"id", userId}}), "application/json");
+  });
+
   svr.Get("/api/servers", [](const Request &, Response &res) {
     json j = json{{"servers", getServers()}};
     res.set_content(to_string(j), "application/json");
@@ -102,17 +108,17 @@ int main() {
       res.status = 400;
       return;
     }
-    json messagesData = getMessages(req.get_param_value("id"));
+    json messagesData = getMessages(req.get_param_value("server"));
     res.set_content(to_string(messagesData), "application/json");
   });
   svr.Post("/api/messages/new", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
     string sessionToken = getTokenFromReq(req);
-    // string userId = getUserIdByEmail("nate@gmail.com");
-
-    // string serverId = createServer(userId, j["name"]);
-    // json resJson = json{{"id", serverId}};
-    res.set_content(to_string(json{sessionToken}), "application/json");
+    string serverId = j["serverId"];
+    string msgContent = j["message"];
+    string userId = getUserIdFromToken(sessionToken);
+    json msgJson = sendMessage(userId, serverId, msgContent);
+    res.set_content(to_string(msgJson), "application/json");
   });
 
   cout << "Server running on port 8080" << endl;

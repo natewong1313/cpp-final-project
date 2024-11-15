@@ -5,11 +5,7 @@
 You'll need sqlite installed on your system
 
 ```bash
-sudo apt-get install sqlite3
-```
-
-```bash
-sudo apt-get install sqlite3
+sudo apt-get install libsqlite3-dev
 ```
 
 ## Getting Started

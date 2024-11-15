@@ -31,45 +31,30 @@
         <a href="#" class="hover:bg-stone-200/50 p-2">Random</a>
       </div>
     </div>
-    <div class="flex flex-col flex-1 h-full p-6">
-      <p class="text-xl">Messages</p>
-      <div class="space-y-4 mt-4 flex flex-col">
-        <div class="max-w-[50%]">
-          <p class="text-xs">Nate | 11/13/24 at 10:45</p>
-          <p class="mt-1 text-sm border border-stone-200 bg-stone-100 p-2">
-            Test message
-          </p>
+    <div class="flex-1 h-full">
+      <div class="h-full w-full flex flex-col flex-nowrap">
+        <div class="flex-shrink-0 p-2">
+          <p class="text-xl">Messages</p>
         </div>
-        <div class="ml-auto min-w-[50%]">
-          <p class="text-xs text-right">11/13/24 at 10:45</p>
-          <p class="mt-1 text-sm border border-stone-200 bg-stone-100 p-2">
-            Test message
-          </p>
+        <div
+          class="flex-grow overflow-auto min-h-34 space-y-4 mt-4 flex flex-col-reverse px-4"
+          id="messagesContainer"
+        ></div>
+        <div class="flex-shrink-0 h-20 flex items-center p-2 pt-6">
+          <form class="flex gap-1 w-full" onsubmit="sendMessage(event)">
+            <input
+              id="messageInput"
+              class="flex flex-1 bg-stone-100 px-2 border border-stone-300 focus:outline-none focus:ring-1 ring-amber-400"
+              placeholder="Enter your message"
+            />
+            <button
+              id="sendButton"
+              class="px-4 w-48 bg-amber-500 h-10 hover:bg-amber-600"
+            >
+              Send
+            </button>
+          </form>
         </div>
-        <div class="max-w-[50%]">
-          <p class="text-xs">Nate | 11/13/24 at 10:45</p>
-          <p class="mt-1 text-sm border border-stone-200 bg-stone-100 p-2">
-            Test message
-          </p>
-        </div>
-      </div>
-      <div class="relative w-full h-full">
-        <form
-          class="absolute bottom-0 w-full flex gap-1"
-          onsubmit="newMessage(event)"
-        >
-          <input
-            id="messageInput"
-            class="flex flex-1 bg-stone-100 px-2 border border-stone-300 focus:outline-none focus:ring-1 ring-amber-400"
-            placeholder="Enter your message"
-          />
-          <button
-            id="sendButton"
-            class="px-4 w-48 bg-amber-500 h-10 hover:bg-amber-600"
-          >
-            Send
-          </button>
-        </form>
       </div>
     </div>
   </body>
@@ -79,6 +64,11 @@
     const urlParams = new URLSearchParams(queryString);
     const serverId = urlParams.get("id");
 
+    async function getUser() {
+      const resp = await fetch("/api/user");
+      return await resp.json();
+    }
+    const userResult = getUser();
     async function getMessages() {
       const resp = await fetch(`/api/messages?server=${serverId}`);
       const jsonResp = await resp.json();
@@ -92,13 +82,7 @@
     }
     const serverDataResult = getServerData();
 
-    document.addEventListener("DOMContentLoaded", async function () {
-      const messages = await messagesResult;
-
-      const serverData = await serverDataResult;
-      document.getElementById("serverName").textContent = serverData["name"];
-    });
-    async function newMessage(e) {
+    async function sendMessage(e) {
       e.preventDefault();
       const button = document.getElementById("sendButton");
       button.disabled = true;
@@ -109,13 +93,42 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          serverId,
           message: messageInput.value,
         }),
       });
       if (response.ok) {
         messageInput.value = "";
+        const message = await response.json();
+        addMessageToDom(message);
       }
       button.disabled = false;
     }
+    function addMessageToDom(message) {
+      const createdAt = new Date(message.createdAt * 1000);
+      const authorId = message.authorId;
+      console.log(authorId, user.id);
+      document.getElementById("messagesContainer").innerHTML =
+        `<div class="${
+          authorId === user.id ? "min-w-[50%] ml-auto" : "max-w-[50%]"
+        }">
+          <p class="text-xs text-right">${createdAt.toLocaleString()}</p>
+          <p class="mt-1 text-sm border border-stone-200 bg-stone-100 p-2">
+            ${message.content}
+          </p>
+        </div>` + document.getElementById("messagesContainer").innerHTML;
+    }
+    let user;
+    document.addEventListener("DOMContentLoaded", async function () {
+      user = await userResult;
+      const messages = await messagesResult;
+      console.log(messages);
+      messages.forEach((element) => {
+        addMessageToDom(element);
+      });
+
+      const serverData = await serverDataResult;
+      document.getElementById("serverName").textContent = serverData["name"];
+    });
   </script>
 </html>
