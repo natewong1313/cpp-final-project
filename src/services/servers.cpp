@@ -2,6 +2,7 @@
 
 #include "../db.h"
 #include "../utils.h"
+#include "./channels.h"
 #include "json.hpp"
 
 #include <string.h>
@@ -16,7 +17,6 @@ string selectServerStmt = "SELECT * FROM servers WHERE id=?";
 // Inserts a new server into the database
 string createServer(string adminId, string name) {
   string serverId = createId();
-  cout << serverId << endl;
   Database *db = Database::getInstance();
   Statement stmt = db->newStatement(insertServerStmt);
   stmt.bind(serverId);
@@ -24,6 +24,8 @@ string createServer(string adminId, string name) {
   stmt.bind(name);
   stmt.execute();
   stmt.finish();
+
+  createChannel(serverId, "General");
   return serverId;
 }
 

@@ -63,6 +63,21 @@
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const serverId = urlParams.get("id");
+    if (!serverId) {
+      window.location.href = "/";
+    }
+    async function redirectToChannel() {
+      const resp = await fetch(`/api/channels?server=${serverId}`);
+      const channels = await resp.json();
+      const generalChannel = channels.find(
+        (channel) => channel.name === "General"
+      );
+      window.location.href = `/server?id=${serverId}&channel=${generalChannel.id}`;
+    }
+    const channelId = urlParams.get("channel");
+    if (!channelId) {
+      redirectToChannel();
+    }
 
     async function getUser() {
       const resp = await fetch("/api/user");
@@ -70,7 +85,7 @@
     }
     const userResult = getUser();
     async function getMessages() {
-      const resp = await fetch(`/api/messages?server=${serverId}`);
+      const resp = await fetch(`/api/messages?channel=${channelId}`);
       const jsonResp = await resp.json();
       return jsonResp;
     }
@@ -93,7 +108,7 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          serverId,
+          channelId,
           message: messageInput.value,
         }),
       });

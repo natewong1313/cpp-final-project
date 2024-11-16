@@ -2,6 +2,7 @@
 #include "httplib.h"
 #include "json.hpp"
 #include "services/auth.h"
+#include "services/channels.h"
 #include "services/messaging.h"
 #include "services/servers.h"
 #include "services/users.h"
@@ -101,6 +102,15 @@ int main() {
     }
     json serverData = getServer(req.get_param_value("id"));
     res.set_content(to_string(serverData), "application/json");
+  });
+  svr.Get("/api/channels", [](const Request &req, Response &res) {
+    if (!req.has_param("server")) {
+      res.set_content(to_string(json{{"error", "Missing server id"}}), "application/json");
+      res.status = 400;
+      return;
+    }
+    json channelsData = getChannels(req.get_param_value("server"));
+    res.set_content(to_string(channelsData), "application/json");
   });
   svr.Get("/api/messages", [](const Request &req, Response &res) {
     if (!req.has_param("server")) {
