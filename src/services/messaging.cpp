@@ -10,9 +10,10 @@
 using json = nlohmann::json;
 using namespace std;
 
-string createMsgStmt = "INSERT INTO messages(id, author_id, server_id, content, created_at) VALUES "
-                       "(?, ?, ?, ?, ?)";
-string selectMsgsStmt = "SELECT * FROM messages WHERE server_id=?";
+string createMsgStmt =
+  "INSERT INTO messages(id, author_id, channel_id, content, created_at) VALUES "
+  "(?, ?, ?, ?, ?)";
+string selectMsgsStmt = "SELECT * FROM messages WHERE channel_id=?";
 
 vector<json> getMessages(string serverId) {
   vector<json> messages;
@@ -22,7 +23,7 @@ vector<json> getMessages(string serverId) {
   while (stmt.step() == SQLITE_ROW) {
     messages.push_back(json{{"id", stmt.getResultString(0)},
                             {"authorId", stmt.getResultString(1)},
-                            {"serverId", stmt.getResultString(2)},
+                            {"channelId", stmt.getResultString(2)},
                             {"content", stmt.getResultString(3)},
                             {"createdAt", stmt.getResultInt(4)}});
   }
@@ -41,7 +42,7 @@ void addMessageToDb(message msg) {
   Statement stmt = db->newStatement(createMsgStmt);
   stmt.bind(msg.id);
   stmt.bind(msg.authorId);
-  stmt.bind(msg.serverId);
+  stmt.bind(msg.channelId);
   stmt.bind(msg.content);
   stmt.bind(msg.createdAt);
   stmt.execute();
@@ -49,10 +50,10 @@ void addMessageToDb(message msg) {
 }
 
 // Broadcasts the message and adds it to the database
-json sendMessage(string authorId, string serverId, string content) {
+json sendMessage(string authorId, string channelId, string content) {
   string messageId = createId();
   int createdAt = time(NULL);
-  message msg = {messageId, authorId, serverId, content, createdAt};
+  message msg = {messageId, authorId, channelId, content, createdAt};
 
   thread msgThread(broadcastMessage, msg);
   msgThread.detach();
@@ -60,7 +61,7 @@ json sendMessage(string authorId, string serverId, string content) {
   dbThread.detach();
   return json{{"id", messageId},
               {"authorId", authorId},
-              {"serverId", serverId},
+              {"channelId", channelId},
               {"content", content},
               {"createdAt", createdAt}};
 }

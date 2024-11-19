@@ -11,14 +11,14 @@ using namespace std;
 struct message {
     string id;
     string authorId;
-    string serverId;
+    string channelId;
     string content;
     int createdAt;
 };
 
-vector<json> getMessages(string serverId);
+vector<json> getMessages(string channelId);
 void broadcastMessage(message msg);
 void addMessageToDb(message msg);
-json sendMessage(string authorId, string serverId, string content);
+json sendMessage(string authorId, string channelId, string content);
 
 #endif

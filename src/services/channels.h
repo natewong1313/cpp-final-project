@@ -8,5 +8,6 @@ using namespace std;
 
 string createChannel(string serverId, string name);
 vector<json> getChannels(string serverId);
+string getGeneralChannel(string serverId);
 
 #endif
