@@ -26,10 +26,7 @@
     <div class="w-64 bg-stone-100 h-full border-r border-stone-300 p-2">
       <a href="/" class="text-sm"><- Home</a>
       <h1 class="font-semibold my-3 text-lg" id="serverName"></h1>
-      <div class="text-sm flex flex-col space-y-2">
-        <a href="#" class="bg-stone-200 p-2">General</a>
-        <a href="#" class="hover:bg-stone-200/50 p-2">Random</a>
-      </div>
+      <div class="text-sm flex flex-col space-y-2" id="channels"></div>
     </div>
     <div class="flex-1 h-full">
       <div class="h-full w-full flex flex-col flex-nowrap">
@@ -37,7 +34,7 @@
           <p class="text-xl">Messages</p>
         </div>
         <div
-          class="flex-grow overflow-auto min-h-34 space-y-4 mt-4 flex flex-col-reverse px-4"
+          class="flex-grow overflow-auto min-h-34 mt-4 flex flex-col-reverse px-4"
           id="messagesContainer"
         ></div>
         <div class="flex-shrink-0 h-20 flex items-center p-2 pt-6">
@@ -46,6 +43,7 @@
               id="messageInput"
               class="flex flex-1 bg-stone-100 px-2 border border-stone-300 focus:outline-none focus:ring-1 ring-amber-400"
               placeholder="Enter your message"
+              required
             />
             <button
               id="sendButton"
@@ -63,21 +61,13 @@
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const serverId = urlParams.get("id");
-    if (!serverId) {
-      window.location.href = "/";
-    }
-    async function redirectToChannel() {
-      const resp = await fetch(`/api/channels?server=${serverId}`);
-      const channels = await resp.json();
-      const generalChannel = channels.find(
-        (channel) => channel.name === "General"
-      );
-      window.location.href = `/server?id=${serverId}&channel=${generalChannel.id}`;
-    }
     const channelId = urlParams.get("channel");
-    if (!channelId) {
-      redirectToChannel();
+
+    async function getChannels() {
+      const resp = await fetch(`/api/channels?server=${serverId}`);
+      return await resp.json();
     }
+    const channelsResult = getChannels();
 
     async function getUser() {
       const resp = await fetch("/api/user");
@@ -125,7 +115,7 @@
       console.log(authorId, user.id);
       document.getElementById("messagesContainer").innerHTML =
         `<div class="${
-          authorId === user.id ? "min-w-[50%] ml-auto" : "max-w-[50%]"
+          authorId === user.id ? "min-w-[55%] ml-auto mt-4" : "max-w-[55%] mt-4"
         }">
           <p class="text-xs text-right">${createdAt.toLocaleString()}</p>
           <p class="mt-1 text-sm border border-stone-200 bg-stone-100 p-2">
@@ -133,14 +123,20 @@
           </p>
         </div>` + document.getElementById("messagesContainer").innerHTML;
     }
+    async function addChannelToDom(channel) {
+      document.getElementById("channels").innerHTML += `<a href="#" class="${
+        channel.id === channelId
+          ? "bg-stone-200 p-2"
+          : "hover:bg-stone-200/50 p-2"
+      }">${channel.name}</a>`;
+    }
     let user;
     document.addEventListener("DOMContentLoaded", async function () {
       user = await userResult;
+      const channels = await channelsResult;
+      channels.forEach(addChannelToDom);
       const messages = await messagesResult;
-      console.log(messages);
-      messages.forEach((element) => {
-        addMessageToDom(element);
-      });
+      messages.forEach(addMessageToDom);
 
       const serverData = await serverDataResult;
       document.getElementById("serverName").textContent = serverData["name"];

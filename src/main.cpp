@@ -48,7 +48,22 @@ int main() {
   svr.Get("/login", [](const Request &req, Response &res) {
     res.set_content(loadHTML("login.html"), "text/html");
   });
-  svr.Get("/server", [](const Request &, Response &res) {
+  svr.Get("/server", [](const Request &req, Response &res) {
+    if (!isAuthenticatedReq(req)) {
+      res.set_redirect("/login");
+      return;
+    }
+    string serverId = req.get_param_value("id");
+    if (serverId == "") {
+      res.set_redirect("/");
+      return;
+    }
+    string channelId = req.get_param_value("channel");
+    if (channelId == "") {
+      string generalChannelId = getGeneralChannel(serverId);
+      res.set_redirect("/server?id=" + serverId + "&channel=" + generalChannelId);
+      return;
+    }
     res.set_content(loadHTML("server.html"), "text/html");
   });
 
@@ -113,21 +128,21 @@ int main() {
     res.set_content(to_string(channelsData), "application/json");
   });
   svr.Get("/api/messages", [](const Request &req, Response &res) {
-    if (!req.has_param("server")) {
-      res.set_content(to_string(json{{"error", "Missing server id"}}), "application/json");
+    if (!req.has_param("channel")) {
+      res.set_content(to_string(json{{"error", "Missing channel id"}}), "application/json");
       res.status = 400;
       return;
     }
-    json messagesData = getMessages(req.get_param_value("server"));
+    json messagesData = getMessages(req.get_param_value("channel"));
     res.set_content(to_string(messagesData), "application/json");
   });
   svr.Post("/api/messages/new", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
     string sessionToken = getTokenFromReq(req);
-    string serverId = j["serverId"];
+    string channelId = j["channelId"];
     string msgContent = j["message"];
     string userId = getUserIdFromToken(sessionToken);
-    json msgJson = sendMessage(userId, serverId, msgContent);
+    json msgJson = sendMessage(userId, channelId, msgContent);
     res.set_content(to_string(msgJson), "application/json");
   });
 
