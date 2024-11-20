@@ -18,5 +18,6 @@ string createServer(string adminId, string name);
 vector<json> getServers();
 json dbResultToJson(Statement stmt);
 json getServer(string serverId);
+bool isValidServerId(string serverId);
 
 #endif

@@ -10,6 +10,7 @@ string insertChannelStmt = "INSERT INTO channels(id, server_id, name) VALUES "
                            "(?, ?, ?)";
 string selectChannelsStmt = "SELECT * FROM channels WHERE server_id=?";
 string selectGeneralChannelStmt = "SELECT id FROM channels WHERE server_id=? AND name='general'";
+string selectChannelStmt = "SELECT * FROM channels WHERE id=?";
 
 string createChannel(string serverId, string name) {
   string channelId = createId();
@@ -41,8 +42,20 @@ string getGeneralChannel(string serverId) {
   Database *db = Database::getInstance();
   Statement stmt = db->newStatement(selectGeneralChannelStmt);
   stmt.bind(serverId);
-  stmt.execute();
+  int rc = stmt.execute();
+  if (rc != SQLITE_ROW) { throw invalid_argument("Invalid server id"); }
   string channelId = stmt.getResultString(0);
   stmt.finish();
   return channelId;
+}
+
+bool isValidChannelId(string channelId) {
+  if (channelId == "") { return false; }
+  Database *db = Database::getInstance();
+  Statement stmt = db->newStatement(selectChannelStmt);
+  stmt.bind(channelId);
+  int rc = stmt.execute();
+  bool isValid = rc == SQLITE_ROW;
+  stmt.finish();
+  return isValid;
 }

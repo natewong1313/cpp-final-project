@@ -82,9 +82,10 @@ void Statement::bind(int intVal) {
   sqlite3_bind_int(this->stmt, bindCount, intVal);
 }
 
-void Statement::execute() {
+int Statement::execute() {
   int rc = sqlite3_step(stmt);
   if (rc != 0 && rc != 100 && rc != 101) { logError(); }
+  return rc;
 }
 
 int Statement::step() {

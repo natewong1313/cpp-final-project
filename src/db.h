@@ -20,7 +20,7 @@ class Statement {
     Statement(string query, sqlite3 *db);
     void bind(string strVal);
     void bind(int intVal);
-    void execute();
+    int execute();
     int step();
     void finish();
     string getResultString(int position);

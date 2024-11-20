@@ -58,15 +58,14 @@ int main() {
       return;
     }
     string serverId = req.get_param_value("id");
-    if (serverId == "") {
-      res.set_redirect("/");
-      return;
-    }
+    if (!isValidServerId(serverId)) { return res.set_redirect("/"); }
+
     string channelId = req.get_param_value("channel");
-    if (channelId == "") {
-      string generalChannelId = getGeneralChannel(serverId);
-      res.set_redirect("/server?id=" + serverId + "&channel=" + generalChannelId);
-      return;
+    if (!isValidChannelId(channelId)) {
+      try {
+        string generalChannelId = getGeneralChannel(serverId);
+        return res.set_redirect("/server?id=" + serverId + "&channel=" + generalChannelId);
+      } catch (const invalid_argument &e) { return res.set_redirect("/"); }
     }
     res.set_content(loadHTML("server.html"), "text/html");
   });

@@ -53,3 +53,14 @@ json getServer(string serverId) {
   stmt.finish();
   return serverData;
 }
+
+bool isValidServerId(string serverId) {
+  if (serverId == "") { return false; }
+  Database *db = Database::getInstance();
+  Statement stmt = db->newStatement(selectServerStmt);
+  stmt.bind(serverId);
+  int rc = stmt.execute();
+  bool isValid = rc == SQLITE_ROW;
+  stmt.finish();
+  return isValid;
+}
