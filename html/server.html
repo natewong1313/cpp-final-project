@@ -23,6 +23,32 @@
     </style>
   </head>
   <body class="bg-stone-50 flex h-screen">
+    <dialog
+      id="createChannelDialog"
+      class="fixed inset-0 m-auto w-fit h-fit p-4 bg-white border border-stone-300 backdrop:bg-black/30"
+    >
+      <form class="flex flex-col" onsubmit="createChannel(event)">
+        <input
+          id="channelName"
+          class="bg-stone-100 text-sm h-9 ring-stone-300 ring-1 p-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
+          placeholder="Enter channel name"
+          required
+        />
+        <button
+          id="createChannelButton"
+          class="mt-4 bg-amber-500 h-9 hover:bg-amber-600 text-sm"
+        >
+          Create
+        </button>
+        <button
+          type="button"
+          onclick="document.getElementById('createChannelDialog').close()"
+          class="mt-2 bg-stone-200 h-9 hover:bg-stone-300 text-sm"
+        >
+          Cancel
+        </button>
+      </form>
+    </dialog>
     <div
       class="w-64 bg-stone-100 h-full border-r border-stone-300 py-2 flex flex-col flex-nowrap"
     >
@@ -39,6 +65,7 @@
       ></div>
       <button
         class="flex-shrink-0 mx-2 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-300"
+        onclick="document.getElementById('createChannelDialog').showModal()"
       >
         New Channel
       </button>
@@ -102,6 +129,29 @@
     }
     const serverDataResult = getServerData();
 
+    function changeChannel(channelId) {
+      window.location.href = `/server?id=${serverId}&channel=${channelId}`;
+    }
+    async function createChannel(e) {
+      e.preventDefault();
+      const button = document.getElementById("createChannelButton");
+      button.disabled = true;
+      const response = await fetch("/api/channels/new", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          serverId,
+          name: document.getElementById("channelName").value,
+        }),
+      });
+      if (response.ok) {
+        const responseJson = await response.json();
+        window.location.href = `/server?id=${serverId}&channel=${responseJson["id"]}`;
+      }
+      button.disabled = false;
+    }
     async function sendMessage(e) {
       e.preventDefault();
       const button = document.getElementById("sendButton");
@@ -139,7 +189,11 @@
         </div>` + document.getElementById("messagesContainer").innerHTML;
     }
     async function addChannelToDom(channel) {
-      document.getElementById("channels").innerHTML += `<a href="#" class="${
+      document.getElementById(
+        "channels"
+      ).innerHTML += `<a href="/server?id=${serverId}&channel=${
+        channel.id
+      }" class="${
         channel.id === channelId
           ? "bg-stone-200 p-2"
           : "hover:bg-stone-200/50 p-2"

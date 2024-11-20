@@ -103,8 +103,8 @@ int main() {
   });
   svr.Post("/api/servers/new", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
-    string userId = getUserIdByEmail("nate@gmail.com");
-    cout << userId << "user id" << endl;
+    string sessionToken = getTokenFromReq(req);
+    string userId = getUserIdFromToken(sessionToken);
     string serverId = createServer(userId, j["name"]);
     json resJson = json{{"id", serverId}};
     res.set_content(to_string(resJson), "application/json");
@@ -126,6 +126,14 @@ int main() {
     }
     json channelsData = getChannels(req.get_param_value("server"));
     res.set_content(to_string(channelsData), "application/json");
+  });
+  svr.Post("/api/channels/new", [](const Request &req, Response &res) {
+    json j = json::parse(req.body);
+    // string sessionToken = getTokenFromReq(req);
+    // string userId = getUserIdFromToken(sessionToken);
+    string channelId = createChannel(j["serverId"], j["name"]);
+    json resJson = json{{"id", channelId}};
+    res.set_content(to_string(resJson), "application/json");
   });
   svr.Get("/api/messages", [](const Request &req, Response &res) {
     if (!req.has_param("channel")) {
