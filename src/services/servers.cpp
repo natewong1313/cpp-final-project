@@ -25,7 +25,7 @@ string createServer(string adminId, string name) {
   stmt.execute();
   stmt.finish();
 
-  createChannel(serverId, "General");
+  createChannel(serverId, "general");
   return serverId;
 }
 

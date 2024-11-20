@@ -30,7 +30,7 @@
       <form class="flex flex-col" onsubmit="createChannel(event)">
         <input
           id="channelName"
-          class="bg-stone-100 text-sm h-9 ring-stone-300 ring-1 p-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
+          class="bg-stone-100 text-sm h-9 ring-stone-300 ring-1 p-2 focus:outline-none focus:ring-2 focus:ring-amber-400 lowercase"
           placeholder="Enter channel name"
           required
         />
@@ -64,7 +64,7 @@
         id="channels"
       ></div>
       <button
-        class="flex-shrink-0 mx-2 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-300"
+        class="flex-shrink-0 mx-2 py-2 bg-stone-200/70 hover:bg-stone-300 border border-stone-300"
         onclick="document.getElementById('createChannelDialog').showModal()"
       >
         New Channel
@@ -197,7 +197,7 @@
         channel.id === channelId
           ? "bg-stone-200 p-2"
           : "hover:bg-stone-200/50 p-2"
-      }">${channel.name}</a>`;
+      }"><span class="text-stone-500 mr-2">#</span>${channel.name}</a>`;
     }
     let user;
     document.addEventListener("DOMContentLoaded", async function () {
