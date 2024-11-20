@@ -23,10 +23,25 @@
     </style>
   </head>
   <body class="bg-stone-50 flex h-screen">
-    <div class="w-64 bg-stone-100 h-full border-r border-stone-300 p-2">
-      <a href="/" class="text-sm"><- Home</a>
-      <h1 class="font-semibold my-3 text-lg" id="serverName"></h1>
-      <div class="text-sm flex flex-col space-y-2" id="channels"></div>
+    <div
+      class="w-64 bg-stone-100 h-full border-r border-stone-300 py-2 flex flex-col flex-nowrap"
+    >
+      <div class="px-2">
+        <a href="/" class="flex-shrink-0 text-sm"><- Home</a>
+        <h1
+          class="flex-shrink-0 font-semibold my-3 text-lg"
+          id="serverName"
+        ></h1>
+      </div>
+      <div
+        class="flex-grow overflow-auto min-h-34 pb-2 text-sm flex flex-col space-y-2 px-2"
+        id="channels"
+      ></div>
+      <button
+        class="flex-shrink-0 mx-2 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-300"
+      >
+        New Channel
+      </button>
     </div>
     <div class="flex-1 h-full">
       <div class="h-full w-full flex flex-col flex-nowrap">
