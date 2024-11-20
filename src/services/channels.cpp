@@ -9,7 +9,7 @@ using namespace std;
 string insertChannelStmt = "INSERT INTO channels(id, server_id, name) VALUES "
                            "(?, ?, ?)";
 string selectChannelsStmt = "SELECT * FROM channels WHERE server_id=?";
-string selectGeneralChannelStmt = "SELECT id FROM channels WHERE name='general'";
+string selectGeneralChannelStmt = "SELECT id FROM channels WHERE server_id=? AND name='general'";
 
 string createChannel(string serverId, string name) {
   string channelId = createId();
@@ -40,6 +40,7 @@ vector<json> getChannels(string serverId) {
 string getGeneralChannel(string serverId) {
   Database *db = Database::getInstance();
   Statement stmt = db->newStatement(selectGeneralChannelStmt);
+  stmt.bind(serverId);
   stmt.execute();
   string channelId = stmt.getResultString(0);
   stmt.finish();
