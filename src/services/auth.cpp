@@ -51,13 +51,11 @@ string getCookieString(string sessionToken) {
   return "token=" + sessionToken + "; Expires=" + expiration + "; Path=/";
 }
 
-bool isAuthenticatedReq(const Request &req) {
-  if (!req.has_header("Cookie")) { return false; }
-  return req.get_header_value("Cookie").find("token=") != string::npos;
+bool hasTokenCookie(const Request &req) {
+  return req.has_header("Cookie") && req.get_header_value("Cookie").find("token=") != string::npos;
 }
 
 string getTokenFromReq(const Request &req) {
-  if (!isAuthenticatedReq(req)) { return ""; }
   string cookieHeader = req.get_header_value("Cookie");
   int startPos = cookieHeader.find("token=") + 6;
   int endPos = cookieHeader.find(";", startPos);
@@ -70,8 +68,21 @@ string getUserIdFromToken(string sessionToken) {
   Database *db = Database::getInstance();
   Statement stmt = db->newStatement(selectUserFromTokenStmt);
   stmt.bind(sessionToken);
-  stmt.execute();
+  int rc = stmt.execute();
+  if (rc != SQLITE_ROW) {
+    stmt.finish();
+    throw invalid_argument("Invalid token");
+  }
   string userId = stmt.getResultString(0);
   stmt.finish();
   return userId;
+}
+
+bool isAuthenticatedReq(const Request &req) {
+  if (!hasTokenCookie(req)) { return false; }
+  string sessionToken = getTokenFromReq(req);
+  try {
+    getUserIdFromToken(sessionToken);
+    return true;
+  } catch (const invalid_argument &e) { return false; }
 }

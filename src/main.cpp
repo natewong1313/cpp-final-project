@@ -43,6 +43,7 @@ int main() {
     res.set_content(loadHTML("index.html"), "text/html");
   });
   svr.Get("/login", [](const Request &req, Response &res) {
+    if (isAuthenticatedReq(req)) { return res.set_redirect("/"); }
     res.set_content(loadHTML("login.html"), "text/html");
   });
   svr.Get("/logout", [](const Request &req, Response &res) {
@@ -51,24 +52,27 @@ int main() {
   });
   svr.Get("/server", [](const Request &req, Response &res) {
     if (!isAuthenticatedReq(req)) { return res.set_redirect("/login"); }
-
+    // get the server id from the url
     string serverId = req.get_param_value("id");
     if (!isValidServerId(serverId)) { return res.set_redirect("/"); }
-
+    // get the channel id from the url
     string channelId = req.get_param_value("channel");
+    // if the channel id is invalid, we'll redirect to the general channel
     if (!isValidChannelId(channelId)) {
       try {
         string generalChannelId = getGeneralChannel(serverId);
         return res.set_redirect("/server?id=" + serverId + "&channel=" + generalChannelId);
-      } catch (const invalid_argument &e) { return res.set_redirect("/"); }
+      } catch (const invalid_argument &e) {
+        // if the server doesnt exist, we'll redirect to the home page
+        return res.set_redirect("/");
+      }
     }
-
     res.set_content(loadHTML("server.html"), "text/html");
   });
-
   svr.Post("/api/signin", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
     bool success = authenticateUser(j["email"], j["password"]);
+    // if the login is invalid, we return an error
     if (!success) {
       res.status = 400;
       return res.set_content(to_string(json{{"error", "Invalid email or password"}}),
@@ -84,19 +88,24 @@ int main() {
     try {
       userId = createUser(j["username"], j["email"], j["password"]);
     } catch (const invalid_argument &e) {
+      // if username or email already exist, we return an error
       res.status = 400;
       return res.set_content(to_string(json{{"error", e.what()}}), "application/json");
     }
     string sessionToken = createSessionToken(userId);
     res.set_header("Set-Cookie", getCookieString(sessionToken));
   });
-
   svr.Get("/api/user", [](const Request &req, Response &res) {
     string sessionToken = getTokenFromReq(req);
-    string userId = getUserIdFromToken(sessionToken);
-    res.set_content(to_string(getUser(userId)), "application/json");
+    try {
+      // get the user id from the token, if the token is invalid, we'll return an error
+      string userId = getUserIdFromToken(sessionToken);
+      res.set_content(to_string(getUser(userId)), "application/json");
+    } catch (const invalid_argument &e) {
+      res.status = 401;
+      return;
+    }
   });
-
   svr.Get("/api/servers", [](const Request &, Response &res) {
     json j = json{{"servers", getServers()}};
     res.set_content(to_string(j), "application/json");
@@ -104,7 +113,13 @@ int main() {
   svr.Post("/api/servers/new", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
     string sessionToken = getTokenFromReq(req);
-    string userId = getUserIdFromToken(sessionToken);
+    string userId;
+    try {
+      userId = getUserIdFromToken(sessionToken);
+    } catch (const invalid_argument &e) {
+      res.status = 401;
+      return;
+    }
     string serverId = createServer(userId, j["name"]);
     json resJson = json{{"id", serverId}};
     res.set_content(to_string(resJson), "application/json");
