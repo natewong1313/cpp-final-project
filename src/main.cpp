@@ -118,11 +118,16 @@ int main() {
       userId = getUserIdFromToken(sessionToken);
     } catch (const invalid_argument &e) {
       res.status = 401;
-      return;
+      return res.set_content(to_string(json{{"error", e.what()}}), "application/json");
     }
-    string serverId = createServer(userId, j["name"]);
-    json resJson = json{{"id", serverId}};
-    res.set_content(to_string(resJson), "application/json");
+    string serverId;
+    try {
+      serverId = createServer(userId, j["name"]);
+    } catch (const invalid_argument &e) {
+      res.status = 400;
+      return res.set_content(to_string(json{{"error", e.what()}}), "application/json");
+    }
+    res.set_content(to_string(json{{"id", serverId}}), "application/json");
   });
   svr.Get("/api/server", [](const Request &req, Response &res) {
     if (!req.has_param("id")) {

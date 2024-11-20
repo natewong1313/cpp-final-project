@@ -51,8 +51,9 @@
     </button>
     <form
       id="serverForm"
-      class="bg-stone-100 border border-stone-300 flex flex-col p-4 mt-4"
+      class="bg-stone-100 border border-stone-300 flex flex-col p-4 mt-4 w-72"
       style="display: none"
+      onsubmit="createServer(event)"
     >
       <h1 class="font-semibold">Create a server</h1>
       <label class="text-sm mt-1">Server Name</label>
@@ -75,6 +76,7 @@
       >
         Cancel
       </button>
+      <p id="createServerErrMsg" class="text-red-500 text-sm mt-2"></p>
     </form>
   </body>
 
@@ -99,9 +101,40 @@
       document.getElementById("servers").appendChild(serverElement);
     }
 
+    async function createServer(e) {
+      e.preventDefault();
+      const button = document.getElementById("createServerButton");
+      button.disabled = true;
+      const response = await fetch("/api/servers/new", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: document.getElementById("serverName").value,
+        }),
+      });
+      const responseJson = await response.json();
+      if (response.ok) {
+        window.location.href = "/server?id=" + responseJson["id"];
+      } else {
+        document.getElementById("createServerErrMsg").textContent =
+          responseJson["error"];
+      }
+      button.disabled = false;
+    }
+
+    function showServerForm() {
+      document.getElementById("serverForm").style.display = "flex";
+      document.getElementById("showServerFormButton").style.display = "none";
+    }
+    function hideServerForm() {
+      document.getElementById("serverForm").style.display = "none";
+      document.getElementById("showServerFormButton").style.display = "block";
+    }
+
     document.addEventListener("DOMContentLoaded", async function () {
       const user = await userResult;
-      console.log(user);
       document.getElementById("username").textContent = user.username;
       const servers = await serversData;
       if (servers.length > 0) {
@@ -109,37 +142,5 @@
         servers.forEach(addServerToDom);
       }
     });
-
-    document
-      .getElementById("serverForm")
-      .addEventListener("submit", async function (e) {
-        e.preventDefault();
-        const button = document.getElementById("createServerButton");
-        button.disabled = true;
-        const response = await fetch("/api/servers/new", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: document.getElementById("serverName").value,
-          }),
-        });
-        const responseJson = await response.json();
-        if (response.ok) {
-          window.location.href = "/server?id=" + responseJson["id"];
-        }
-        button.disabled = false;
-      });
-
-    function showServerForm() {
-      document.getElementById("serverForm").style.display = "flex";
-      document.getElementById("showServerFormButton").style.display = "none";
-    }
-
-    function hideServerForm() {
-      document.getElementById("serverForm").style.display = "none";
-      document.getElementById("showServerFormButton").style.display = "block";
-    }
   </script>
 </html>

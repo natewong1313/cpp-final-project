@@ -22,9 +22,15 @@ string createServer(string adminId, string name) {
   stmt.bind(serverId);
   stmt.bind(adminId);
   stmt.bind(name);
-  stmt.execute();
+  int rc = stmt.execute();
   stmt.finish();
-
+  if (rc == 19) {
+    throw invalid_argument("Server name already exists");
+    // string errMsg = sqlite3_errmsg(db->getConnection());
+    // if (errMsg == "UNIQUE constraint failed: servers.name") {
+    //   throw invalid_argument("Server name already exists");
+    // }
+  }
   createChannel(serverId, "general");
   return serverId;
 }

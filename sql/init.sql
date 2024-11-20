@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS userTokens(
 CREATE TABLE IF NOT EXISTS servers(
     id TEXT PRIMARY KEY,
     admin_id INTEGER NOT NULL,
-    name TEXT NOT NULL,
+    name TEXT UNIQUE NOT NULL,
     FOREIGN KEY (admin_id) REFERENCES users(id)
 );
 
