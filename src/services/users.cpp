@@ -2,6 +2,7 @@
 #include "../utils.h"
 #include "json.hpp"
 
+#include <sqlite3.h>
 #include <string.h>
 #include <string>
 using namespace std;
@@ -20,8 +21,16 @@ string createUser(string username, string email, string password) {
   stmt.bind(username);
   stmt.bind(email);
   stmt.bind(password);
-  stmt.execute();
+  int rc = stmt.execute();
   stmt.finish();
+  if (rc == 19) {
+    string errMsg = sqlite3_errmsg(db->getConnection());
+    if (errMsg == "UNIQUE constraint failed: users.username") {
+      throw invalid_argument("Username already exists");
+    } else if (errMsg == "UNIQUE constraint failed: users.email") {
+      throw invalid_argument("Email already exists");
+    }
+  }
   return userId;
 }
 

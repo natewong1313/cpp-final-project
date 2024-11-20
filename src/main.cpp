@@ -39,10 +39,7 @@ int main() {
   // cout << "done" << endl;
 
   svr.Get("/", [](const Request &req, Response &res) {
-    if (!isAuthenticatedReq(req)) {
-      res.set_redirect("/login");
-      return;
-    }
+    if (!isAuthenticatedReq(req)) { return res.set_redirect("/login"); }
     res.set_content(loadHTML("index.html"), "text/html");
   });
   svr.Get("/login", [](const Request &req, Response &res) {
@@ -53,10 +50,8 @@ int main() {
     res.set_redirect("/login");
   });
   svr.Get("/server", [](const Request &req, Response &res) {
-    if (!isAuthenticatedReq(req)) {
-      res.set_redirect("/login");
-      return;
-    }
+    if (!isAuthenticatedReq(req)) { return res.set_redirect("/login"); }
+
     string serverId = req.get_param_value("id");
     if (!isValidServerId(serverId)) { return res.set_redirect("/"); }
 
@@ -67,6 +62,7 @@ int main() {
         return res.set_redirect("/server?id=" + serverId + "&channel=" + generalChannelId);
       } catch (const invalid_argument &e) { return res.set_redirect("/"); }
     }
+
     res.set_content(loadHTML("server.html"), "text/html");
   });
 
@@ -74,9 +70,9 @@ int main() {
     json j = json::parse(req.body);
     bool success = authenticateUser(j["email"], j["password"]);
     if (!success) {
-      res.set_content(to_string(json{{"error", "Invalid email or password"}}), "application/json");
       res.status = 400;
-      return;
+      return res.set_content(to_string(json{{"error", "Invalid email or password"}}),
+                             "application/json");
     }
     string userId = getUserIdByEmail(j["email"]);
     string sessionToken = createSessionToken(userId);
@@ -84,11 +80,12 @@ int main() {
   });
   svr.Post("/api/signup", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
-    string userId = createUser(j["username"], j["email"], j["password"]);
-    if (!userId.compare("")) {
-      res.set_content(to_string(json{{"error", "User already exists"}}), "application/json");
+    string userId;
+    try {
+      userId = createUser(j["username"], j["email"], j["password"]);
+    } catch (const invalid_argument &e) {
       res.status = 400;
-      return;
+      return res.set_content(to_string(json{{"error", e.what()}}), "application/json");
     }
     string sessionToken = createSessionToken(userId);
     res.set_header("Set-Cookie", getCookieString(sessionToken));

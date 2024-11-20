@@ -43,7 +43,10 @@ string getGeneralChannel(string serverId) {
   Statement stmt = db->newStatement(selectGeneralChannelStmt);
   stmt.bind(serverId);
   int rc = stmt.execute();
-  if (rc != SQLITE_ROW) { throw invalid_argument("Invalid server id"); }
+  if (rc != SQLITE_ROW) {
+    stmt.finish();
+    throw invalid_argument("Invalid server id");
+  }
   string channelId = stmt.getResultString(0);
   stmt.finish();
   return channelId;
