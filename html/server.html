@@ -32,9 +32,10 @@
       class="fixed inset-0 m-auto w-fit h-fit p-4 bg-stone-50 border border-stone-400 backdrop:bg-black/30"
     >
       <form class="flex flex-col" onsubmit="createChannel(event)">
+        <label class="text-sm mt-1">Server Name</label>
         <input
           id="channelName"
-          class="bg-stone-100 text-sm h-9 ring-stone-300 ring-1 p-2 focus:outline-none focus:ring-2 focus:ring-amber-400 lowercase"
+          class="mt-2 bg-stone-100 text-sm h-9 ring-stone-300 ring-1 p-2 focus:outline-none focus:ring-2 focus:ring-amber-400 lowercase placeholder:capitalize"
           placeholder="Enter channel name"
           required
         />
@@ -47,6 +48,41 @@
         <button
           type="button"
           onclick="document.getElementById('createChannelDialog').close()"
+          class="mt-2 bg-stone-200 h-9 hover:bg-stone-300 text-sm"
+        >
+          Cancel
+        </button>
+      </form>
+    </dialog>
+    <dialog
+      id="editChannelDialog"
+      class="fixed inset-0 m-auto w-fit h-fit p-4 bg-stone-50 border border-stone-400 backdrop:bg-black/30"
+    >
+      <form class="flex flex-col" onsubmit="createChannel(event)">
+        <label class="text-sm mt-1">Server Name</label>
+        <input
+          id="editChannelName"
+          class="mt-2 bg-stone-100 text-sm h-9 ring-stone-300 ring-1 p-2 focus:outline-none focus:ring-2 focus:ring-amber-400 lowercase placeholder:capitalize"
+          placeholder="Enter channel name"
+          required
+        />
+        <div class="mt-4 grid grid-cols-2 gap-2">
+          <button
+            id="createChannelButton"
+            class="bg-amber-500 h-9 hover:bg-amber-600 text-sm"
+          >
+            Save
+          </button>
+          <button
+            id="createChannelButton"
+            class="h-9 bg-red-500 text-stone-200 hover:bg-red-600 text-sm"
+          >
+            Delete
+          </button>
+        </div>
+        <button
+          type="button"
+          onclick="document.getElementById('editChannelDialog').close()"
           class="mt-2 bg-stone-200 h-9 hover:bg-stone-300 text-sm"
         >
           Cancel
@@ -82,7 +118,11 @@
         <div
           class="flex-grow overflow-auto min-h-34 mt-4 flex flex-col-reverse px-4"
           id="messagesContainer"
-        ></div>
+        >
+          <p class="text-stone-600 text-sm hidden" id="noMessagesText">
+            No messages yet. Send one to get started
+          </p>
+        </div>
         <div class="flex-shrink-0 h-20 flex items-center p-2 pt-6">
           <form class="flex gap-1 w-full" onsubmit="sendMessage(event)">
             <input
@@ -104,6 +144,11 @@
   </body>
 
   <script>
+    let user;
+    let serverData;
+    let channels;
+    let messages;
+
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const serverId = urlParams.get("id");
@@ -135,6 +180,11 @@
 
     function changeChannel(channelId) {
       window.location.href = `/server?id=${serverId}&channel=${channelId}`;
+    }
+    function updateEditChannelDialog(channelId) {
+      const channel = channels.find((channel) => channel.id === channelId);
+      document.getElementById("editChannelName").value = channel.name;
+      document.getElementById("editChannelDialog").showModal();
     }
     async function createChannel(e) {
       e.preventDefault();
@@ -174,9 +224,14 @@
       if (response.ok) {
         messageInput.value = "";
         const message = await response.json();
-        addMessageToDom(message);
+        newMessage(message);
       }
       button.disabled = false;
+    }
+    function newMessage(message) {
+      messages.push(message);
+      document.getElementById("noMessagesText").style.display = "none";
+      addMessageToDom(message);
     }
     function addMessageToDom(message) {
       const createdAt = new Date(message.createdAt * 1000);
@@ -196,6 +251,13 @@
       const href = `/server?id=${serverId}&channel=${channel.id}`;
       const channelStyle =
         channel.id === channelId ? "bg-stone-200" : "hover:bg-stone-200/50";
+      const editButton =
+        user.id === serverData.adminId
+          ? `<button 
+              onclick="event.preventDefault();updateEditChannelDialog('${channel.id}')"
+              class="flex-shrink-0 text-stone-500 hover:text-amber-500"
+            ><i class="fas fa-edit"></i></button>`
+          : "";
 
       document.getElementById(
         "channels"
@@ -204,23 +266,20 @@
           <span class="text-stone-500 mr-1">#</span>
           <span class="truncate block">${channel.name}</span>
         </span>
-        ${
-          user.id === serverData.adminId
-            ? `<button onclick="event.preventDefault()" class="flex-shrink-0 text-stone-500 hover:text-amber-500"><i class="fas fa-edit"></i></button>`
-            : ""
-        }
+        ${editButton}
       </a>`;
     }
-    let user;
-    let serverData;
     document.addEventListener("DOMContentLoaded", async function () {
       serverData = await serverDataResult;
       document.getElementById("serverName").textContent = serverData["name"];
 
       user = await userResult;
-      const channels = await channelsResult;
+      channels = await channelsResult;
       channels.forEach(addChannelToDom);
-      const messages = await messagesResult;
+      messages = await messagesResult;
+      if (messages.length === 0) {
+        document.getElementById("noMessagesText").style.display = "block";
+      }
       messages.forEach(addMessageToDom);
     });
   </script>
