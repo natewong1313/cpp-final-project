@@ -22,8 +22,19 @@
       }
     </style>
   </head>
-  <body class="bg-stone-50 flex items-center flex-col p-12">
-    <h1 class="text-2xl font-semibold">
+  <body class="bg-stone-50 flex items-center flex-col pb-12">
+    <div
+      class="bg-stone-100 border border-stone-300 flex justify-between p-4 w-96 text-sm"
+    >
+      <p>Hello <span id="username"></span></p>
+      <a
+        href="/logout"
+        class="text-amber-600 hover:text-amber-700 hover:underline"
+      >
+        Logout
+      </a>
+    </div>
+    <h1 class="text-2xl font-semibold pt-12">
       Welcome to <span class="italic">Not Discord</span>
     </h1>
     <p class="text-stone-600">View the available servers below</p>
@@ -68,6 +79,11 @@
   </body>
 
   <script>
+    async function getUser() {
+      const resp = await fetch("/api/user");
+      return await resp.json();
+    }
+    const userResult = getUser();
     async function getServers() {
       const res = await fetch("/api/servers");
       return (await res.json())["servers"];
@@ -84,6 +100,9 @@
     }
 
     document.addEventListener("DOMContentLoaded", async function () {
+      const user = await userResult;
+      console.log(user);
+      document.getElementById("username").textContent = user.username;
       const servers = await serversData;
       if (servers.length > 0) {
         document.getElementById("servers").innerHTML = "";

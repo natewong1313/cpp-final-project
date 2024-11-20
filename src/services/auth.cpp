@@ -53,7 +53,7 @@ string getCookieString(string sessionToken) {
 
 bool isAuthenticatedReq(const Request &req) {
   if (!req.has_header("Cookie")) { return false; }
-  return req.get_header_value("Cookie") != "";
+  return req.get_header_value("Cookie").find("token=") != string::npos;
 }
 
 string getTokenFromReq(const Request &req) {

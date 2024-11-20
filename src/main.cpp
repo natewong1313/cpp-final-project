@@ -48,6 +48,10 @@ int main() {
   svr.Get("/login", [](const Request &req, Response &res) {
     res.set_content(loadHTML("login.html"), "text/html");
   });
+  svr.Get("/logout", [](const Request &req, Response &res) {
+    res.set_header("Set-Cookie", "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
+    res.set_redirect("/login");
+  });
   svr.Get("/server", [](const Request &req, Response &res) {
     if (!isAuthenticatedReq(req)) {
       res.set_redirect("/login");
@@ -94,7 +98,7 @@ int main() {
   svr.Get("/api/user", [](const Request &req, Response &res) {
     string sessionToken = getTokenFromReq(req);
     string userId = getUserIdFromToken(sessionToken);
-    res.set_content(to_string(json{{"id", userId}}), "application/json");
+    res.set_content(to_string(getUser(userId)), "application/json");
   });
 
   svr.Get("/api/servers", [](const Request &, Response &res) {
