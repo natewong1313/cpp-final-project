@@ -84,6 +84,7 @@
     "variant": "cpp",
     "format": "cpp",
     "charconv": "cpp",
-    "chrono": "cpp"
+    "chrono": "cpp",
+    "shared_mutex": "cpp"
   }
 }
