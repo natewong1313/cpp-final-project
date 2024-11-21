@@ -6,10 +6,12 @@
 #include "db.h"
 #include "httplib.h"
 #include "json.hpp"
+#include "services/messagemanager.h"
 #include "utils.h"
 
 #include <iostream>
 #include <sqlite3.h>
+#include <thread>
 using namespace std;
 using namespace httplib;
 using json = nlohmann::json;
@@ -18,6 +20,13 @@ Server svr;
 
 int main() {
   Database *newDb = Database::getInstance();
+
+  MessageManager mm;
+
+  thread listenThread(&MessageManager::listen_for_message, &mm, "test");
+  listenThread.detach();
+  sleep(2);
+  mm.broadcast_message("test", "hello world");
 
   // createServer()
   // vector<ChatServer> servers = loadChatServersFromDb();

@@ -10,13 +10,12 @@ class MessageManager {
   private:
     condition_variable cv;
     mutex m;
-    map<string, ChannelListener> channels;
+    // map<string, ChannelListener> channels;
 
   public:
+    MessageManager();
     void broadcast_message(string channelId, string message);
     void listen_for_message(string channelId);
 };
-
-class ChannelListener {};
 
 #endif
