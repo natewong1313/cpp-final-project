@@ -19,9 +19,11 @@ Simply run `make` to get the project running
 - [yhirose/cpp-httplib](https://github.com/yhirose/cpp-httplib) single file http library used for the base server
 - [nlohmann/json](https://github.com/nlohmann/json) very convenient json library
 - [r-lyeh-archived/sole](https://github.com/r-lyeh-archived/sole) library for uuids bc libuuid-dev is dog\*\*\*\*
-  Helpful blog posts/docs
+
+Helpful blog posts/docs
 
 - [sqlite docs](https://www.sqlite.org/cintro.html)
 - [sqlite multi-threading](https://www.codeproject.com/Articles/5379574/More-SQLite-Multi-threading)
 - [implementing a singleton class](https://www.geeksforgeeks.org/implementation-of-singleton-class-in-cpp/)
 - [the copenhagen book](https://thecopenhagenbook.com/) guidelines for web auth
+- [understanding locking mechanisms in c++](https://medium.com/@elysiumceleste/understanding-locking-mechanisms-in-c-std-lock-guard-std-unique-lock-and-std-shared-lock-a8aac4d575ce) helpful article on locking

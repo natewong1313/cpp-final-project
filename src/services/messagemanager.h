@@ -15,6 +15,9 @@ class ChannelListener {
 
   public:
     ChannelListener();
+
+    void broadcast_message(string message);
+    void listen_for_message();
 };
 
 class MessageManager {
@@ -23,7 +26,8 @@ class MessageManager {
     shared_mutex m;
     unordered_map<string, shared_ptr<ChannelListener>> channels;
 
-    shared_ptr<ChannelListener> get_listener(string channelId);
+    shared_ptr<ChannelListener> get_existing_listener(string channelId);
+    shared_ptr<ChannelListener> new_listener(string channelId);
 
   public:
     MessageManager();
