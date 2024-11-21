@@ -1,11 +1,11 @@
+#include "api/auth.h"
+#include "api/channels.h"
+#include "api/messaging.h"
+#include "api/servers.h"
+#include "api/users.h"
 #include "db.h"
 #include "httplib.h"
 #include "json.hpp"
-#include "services/auth.h"
-#include "services/channels.h"
-#include "services/messaging.h"
-#include "services/servers.h"
-#include "services/users.h"
 #include "utils.h"
 
 #include <iostream>
