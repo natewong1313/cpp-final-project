@@ -54,7 +54,11 @@ json getServer(string serverId) {
   Database *db = Database::getInstance();
   Statement stmt = db->newStatement(selectServerStmt);
   stmt.bind(serverId);
-  stmt.execute();
+  int rc = stmt.execute();
+  if (rc != SQLITE_ROW) {
+    stmt.finish();
+    throw invalid_argument("Invalid server id");
+  }
   json serverData = dbResultToJson(stmt);
   stmt.finish();
   return serverData;

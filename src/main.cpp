@@ -52,14 +52,12 @@ int main() {
   });
   svr.Get("/server", [](const Request &req, Response &res) {
     if (!isAuthenticatedReq(req)) { return res.set_redirect("/login"); }
-    // get the server id from the url
     string serverId = req.get_param_value("id");
     if (!isValidServerId(serverId)) { return res.set_redirect("/"); }
-    // get the channel id from the url
     string channelId = req.get_param_value("channel");
-    // if the channel id is invalid, we'll redirect to the general channel
     if (!isValidChannelId(channelId)) {
       try {
+        // if no channel id is provided, we'll redirect to the general channel
         string generalChannelId = getGeneralChannel(serverId);
         return res.set_redirect("/server?id=" + serverId + "&channel=" + generalChannelId);
       } catch (const invalid_argument &e) {
@@ -98,10 +96,11 @@ int main() {
   svr.Get("/api/user", [](const Request &req, Response &res) {
     string sessionToken = getTokenFromReq(req);
     try {
-      // get the user id from the token, if the token is invalid, we'll return an error
+      // get the user id from the token and return the user data json
       string userId = getUserIdFromToken(sessionToken);
       res.set_content(to_string(getUser(userId)), "application/json");
     } catch (const invalid_argument &e) {
+      // return an error if the token is invalid
       res.status = 401;
       return;
     }
@@ -112,11 +111,11 @@ int main() {
   });
   svr.Post("/api/servers/new", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
-    string sessionToken = getTokenFromReq(req);
     string userId;
     try {
-      userId = getUserIdFromToken(sessionToken);
+      userId = getUserIdFromToken(getTokenFromReq(req));
     } catch (const invalid_argument &e) {
+      // if token has an invalid user id, we'll return an error
       res.status = 401;
       return res.set_content(to_string(json{{"error", e.what()}}), "application/json");
     }
@@ -124,6 +123,7 @@ int main() {
     try {
       serverId = createServer(userId, j["name"]);
     } catch (const invalid_argument &e) {
+      // if a server with the same name already exists, we'll return an error
       res.status = 400;
       return res.set_content(to_string(json{{"error", e.what()}}), "application/json");
     }
@@ -131,12 +131,18 @@ int main() {
   });
   svr.Get("/api/server", [](const Request &req, Response &res) {
     if (!req.has_param("id")) {
-      res.set_content(to_string(json{{"error", "Missing server id"}}), "application/json");
       res.status = 400;
-      return;
+      return res.set_content(to_string(json{{"error", "Missing server id"}}), "application/json");
     }
-    json serverData = getServer(req.get_param_value("id"));
-    res.set_content(to_string(serverData), "application/json");
+    try {
+      // get the server data by id and return it
+      json serverData = getServer(req.get_param_value("id"));
+      res.set_content(to_string(serverData), "application/json");
+    } catch (const invalid_argument &e) {
+      // if the server id is invalid, we'll return an error
+      res.status = 400;
+      return res.set_content(to_string(json{{"error", e.what()}}), "application/json");
+    }
   });
   svr.Get("/api/channels", [](const Request &req, Response &res) {
     if (!req.has_param("server")) {
