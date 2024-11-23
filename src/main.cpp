@@ -156,6 +156,16 @@ int main() {
     json channelsData = getChannels(req.get_param_value("server"));
     res.set_content(to_string(channelsData), "application/json");
   });
+  svr.Get("/api/channels/authors", [](const Request &req, Response &res) {
+    if (!req.has_param("channel")) {
+      res.set_content(to_string(json{{"error", "Missing channel id"}}), "application/json");
+      res.status = 400;
+      return;
+    }
+    json authors = getAuthors(req.get_param_value("channel"));
+    cout << authors << endl;
+    res.set_content(to_string(authors), "application/json");
+  });
   svr.Post("/api/channels/new", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
     // string sessionToken = getTokenFromReq(req);

@@ -90,7 +90,7 @@
       </form>
     </dialog>
     <div
-      class="w-64 bg-stone-100 h-full border-r border-stone-300 py-2 flex flex-col flex-nowrap"
+      class="w-72 bg-stone-100 h-full border-r border-stone-300 py-2 flex flex-col flex-nowrap"
     >
       <div class="px-2">
         <a href="/" class="flex-shrink-0 text-sm"><- Home </a>
@@ -148,6 +148,7 @@
     let serverData;
     let channels;
     let messages;
+    let authors;
 
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -160,17 +161,29 @@
     }
     const channelsResult = getChannels();
 
+    async function getAuthors() {
+      const resp = await fetch(`/api/channels/authors?channel=${channelId}`);
+      const rawAuthors = await resp.json();
+      return rawAuthors.reduce((acc, cur) => {
+        acc[cur.id] = cur.username;
+        return acc;
+      }, {});
+    }
+    const authorsResult = getAuthors();
+
     async function getUser() {
       const resp = await fetch("/api/user");
       return await resp.json();
     }
     const userResult = getUser();
+
     async function getMessages() {
       const resp = await fetch(`/api/messages?channel=${channelId}`);
       const jsonResp = await resp.json();
       return jsonResp;
     }
     const messagesResult = getMessages();
+
     async function getServerData() {
       const resp = await fetch(`/api/server?id=${serverId}`);
       const jsonResp = await resp.json();
@@ -234,12 +247,14 @@
     function addMessageToDom(message) {
       const createdAt = new Date(message.createdAt * 1000);
       const authorId = message.authorId;
-      console.log(authorId, user.id);
+      const isAuthor = authorId === user.id;
       document.getElementById("messagesContainer").innerHTML =
         `<div class="${
-          authorId === user.id ? "min-w-[55%] ml-auto mt-4" : "max-w-[55%] mt-4"
+          isAuthor ? "min-w-[55%] ml-auto mt-4" : "max-w-[55%] mt-4"
         }">
-          <p class="text-xs text-right">${createdAt.toLocaleString()}</p>
+          <p class="text-xs ${isAuthor ? "text-right" : "text-left"}">${
+          authors[authorId] ? authors[authorId] : "Loading"
+        } | ${createdAt.toLocaleString()}</p>
           <p class="mt-1 text-sm border border-stone-200 bg-stone-100 p-2">
             ${message.content}
           </p>
@@ -278,6 +293,7 @@
       serverData = await serverDataResult;
       document.getElementById("serverName").textContent = serverData["name"];
 
+      authors = await authorsResult;
       user = await userResult;
       channels = await channelsResult;
       channels.forEach(addChannelToDom);

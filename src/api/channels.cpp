@@ -11,6 +11,9 @@ string insertChannelStmt = "INSERT INTO channels(id, server_id, name) VALUES "
 string selectChannelsStmt = "SELECT * FROM channels WHERE server_id=?";
 string selectGeneralChannelStmt = "SELECT id FROM channels WHERE server_id=? AND name='general'";
 string selectChannelStmt = "SELECT * FROM channels WHERE id=?";
+string selectAuthorsStmt =
+  "SELECT DISTINCT u.id, u.username FROM messages m JOIN users u ON u.id = "
+  "m.author_id WHERE m.channel_id =?";
 
 string createChannel(string serverId, string name) {
   string channelId = createId();
@@ -61,4 +64,16 @@ bool isValidChannelId(string channelId) {
   bool isValid = rc == SQLITE_ROW;
   stmt.finish();
   return isValid;
+}
+
+vector<json> getAuthors(string channelId) {
+  Database *db = Database::getInstance();
+  Statement stmt = db->newStatement(selectAuthorsStmt);
+  stmt.bind(channelId);
+  vector<json> authors;
+  while (stmt.step() == SQLITE_ROW) {
+    authors.push_back(json{{"id", stmt.getResultString(0)}, {"username", stmt.getResultString(1)}});
+  }
+  stmt.finish();
+  return authors;
 }
