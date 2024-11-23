@@ -188,8 +188,18 @@ int main() {
     json msgJson = sendMessage(userId, channelId, msgContent);
     res.set_content(to_string(msgJson), "application/json");
   });
+  svr.Get("/api/messages/live", [](const Request &req, Response &res) {
+    const auto sseListener = [&](size_t size, httplib::DataSink &sink) {
+      mm.listen_for_message("test");
+      string msg = "data: hello world\n\n";
+      sink.write(msg.data(), msg.size());
+      return true;
+    };
+    res.set_chunked_content_provider("text/event-stream", sseListener);
+  });
+
   svr.Get("/api/test", [](const Request &req, Response &res) {
-    mm.broadcast_message("test", {"test", "test", "test", "test", 0});
+    mm.broadcast_message("test", json{{"test", "test"}});
     res.set_content("{}", "application/json");
   });
 

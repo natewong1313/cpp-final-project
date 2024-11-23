@@ -282,5 +282,10 @@
       }
       messages.forEach(addMessageToDom);
     });
+
+    const es = new EventSource("/api/messages/live");
+    es.onmessage = function (e) {
+      console.log(e.data);
+    };
   </script>
 </html>

@@ -22,7 +22,7 @@ void ChannelListener::broadcast_message(json message) {
 void ChannelListener::listen_for_message() {
   unique_lock<mutex> lk(m);
   cv.wait(lk);
-  cout << "Message received" << latestMessage["content"].get<string>() << endl;
+  cout << "Message received" << endl;
 }
 
 MessageManager::MessageManager() {
