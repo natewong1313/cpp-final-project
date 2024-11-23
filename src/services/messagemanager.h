@@ -2,6 +2,7 @@
 #define MESSAGEMANAGER_H
 
 #include "../api/messaging.h"
+#include "httplib.h"
 #include "json.hpp"
 
 #include <condition_variable>
@@ -11,6 +12,7 @@
 #include <unordered_map>
 using json = nlohmann::json;
 using namespace std;
+using namespace httplib;
 
 class ChannelListener {
   private:
@@ -22,7 +24,7 @@ class ChannelListener {
     ChannelListener();
 
     void broadcast_message(json message);
-    void listen_for_message();
+    void listen_for_message(DataSink &sink);
 };
 
 class MessageManager {
@@ -37,7 +39,7 @@ class MessageManager {
   public:
     MessageManager();
     void broadcast_message(string channelId, json message);
-    void listen_for_message(string channelId);
+    void listen_for_message(string channelId, DataSink &sink);
 };
 
 #endif

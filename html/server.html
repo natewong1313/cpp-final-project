@@ -223,15 +223,13 @@
       });
       if (response.ok) {
         messageInput.value = "";
-        const message = await response.json();
-        newMessage(message);
       }
       button.disabled = false;
     }
     function newMessage(message) {
+      addMessageToDom(message);
       messages.push(message);
       document.getElementById("noMessagesText").style.display = "none";
-      addMessageToDom(message);
     }
     function addMessageToDom(message) {
       const createdAt = new Date(message.createdAt * 1000);
@@ -274,7 +272,7 @@
       "/api/messages/live?channel=" + channelId
     );
     messagesEvtSrc.onmessage = function (msgEvt) {
-      console.log(msgEvt.data);
+      newMessage(JSON.parse(msgEvt.data));
     };
     document.addEventListener("DOMContentLoaded", async function () {
       serverData = await serverDataResult;

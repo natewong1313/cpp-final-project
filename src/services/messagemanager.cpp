@@ -1,6 +1,7 @@
 #include "messagemanager.h"
 
 #include "../api/messaging.h"
+#include "httplib.h"
 #include "json.hpp"
 
 #include <iostream>
@@ -9,6 +10,7 @@
 #include <unordered_map>
 using json = nlohmann::json;
 using namespace std;
+using namespace httplib;
 
 ChannelListener::ChannelListener() {}
 
@@ -19,10 +21,11 @@ void ChannelListener::broadcast_message(json message) {
   cout << "message broadcasted" << endl;
 }
 
-void ChannelListener::listen_for_message() {
+void ChannelListener::listen_for_message(DataSink &sink) {
   unique_lock<mutex> lk(m);
   cv.wait(lk);
-  cout << "Message received" << endl;
+  string msg = "data: " + to_string(latestMessage) + "\n\n";
+  sink.write(msg.data(), msg.size());
 }
 
 MessageManager::MessageManager() {
@@ -61,9 +64,9 @@ shared_ptr<ChannelListener> MessageManager::new_listener(string channelId) {
   return listener;
 }
 
-void MessageManager::listen_for_message(string channelId) {
+void MessageManager::listen_for_message(string channelId, DataSink &sink) {
   shared_ptr<ChannelListener> listener = get_existing_listener(channelId);
   if (listener == nullptr) { listener = new_listener(channelId); }
 
-  listener->listen_for_message();
+  while (true) { listener->listen_for_message(sink); }
 }

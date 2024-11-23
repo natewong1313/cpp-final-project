@@ -22,12 +22,6 @@ MessageManager mm;
 int main() {
   Database *newDb = Database::getInstance();
 
-  thread listenThread(&MessageManager::listen_for_message, &mm, "test");
-  listenThread.detach();
-  thread listenThread2(&MessageManager::listen_for_message, &mm, "test");
-  listenThread2.detach();
-  sleep(2);
-
   // createServer()
   // vector<ChatServer> servers = loadChatServersFromDb();
   // ChatServer server = ChatServer(1, "Nates server");
@@ -200,9 +194,9 @@ int main() {
     cout << "listening for messages on channel " << channelId << endl;
     const auto sseListener = [channelId](size_t size, httplib::DataSink &sink) {
       cout << "listening for messages on channel " << channelId << endl;
-      mm.listen_for_message(channelId);
-      string msg = "data: hello world\n\n";
-      sink.write(msg.data(), msg.size());
+      mm.listen_for_message(channelId, sink);
+      // string msg = "data: hello world\n\n";
+      // sink.write(msg.data(), msg.size());
       return true;
     };
     res.set_chunked_content_provider("text/event-stream", sseListener);
