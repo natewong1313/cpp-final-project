@@ -186,21 +186,26 @@ int main() {
     string msgContent = j["message"];
     string userId = getUserIdFromToken(sessionToken);
     json msgJson = sendMessage(userId, channelId, msgContent);
+    mm.broadcast_message(channelId, msgJson);
+    cout << "broadcasted message to channel " << channelId << endl;
     res.set_content(to_string(msgJson), "application/json");
   });
   svr.Get("/api/messages/live", [](const Request &req, Response &res) {
-    const auto sseListener = [&](size_t size, httplib::DataSink &sink) {
-      mm.listen_for_message("test");
+    if (!req.has_param("channel")) {
+      res.set_content(to_string(json{{"error", "Missing channel id"}}), "application/json");
+      res.status = 400;
+      return;
+    }
+    string channelId = req.get_param_value("channel");
+    cout << "listening for messages on channel " << channelId << endl;
+    const auto sseListener = [channelId](size_t size, httplib::DataSink &sink) {
+      cout << "listening for messages on channel " << channelId << endl;
+      mm.listen_for_message(channelId);
       string msg = "data: hello world\n\n";
       sink.write(msg.data(), msg.size());
       return true;
     };
     res.set_chunked_content_provider("text/event-stream", sseListener);
-  });
-
-  svr.Get("/api/test", [](const Request &req, Response &res) {
-    mm.broadcast_message("test", json{{"test", "test"}});
-    res.set_content("{}", "application/json");
   });
 
   cout << "Server running on port 8080" << endl;
