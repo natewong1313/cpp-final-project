@@ -17,16 +17,16 @@ using namespace httplib;
 using json = nlohmann::json;
 
 Server svr;
+MessageManager mm;
 
 int main() {
   Database *newDb = Database::getInstance();
 
-  MessageManager mm;
-
   thread listenThread(&MessageManager::listen_for_message, &mm, "test");
   listenThread.detach();
+  thread listenThread2(&MessageManager::listen_for_message, &mm, "test");
+  listenThread2.detach();
   sleep(2);
-  mm.broadcast_message("test", "hello world");
 
   // createServer()
   // vector<ChatServer> servers = loadChatServersFromDb();
@@ -187,6 +187,10 @@ int main() {
     string userId = getUserIdFromToken(sessionToken);
     json msgJson = sendMessage(userId, channelId, msgContent);
     res.set_content(to_string(msgJson), "application/json");
+  });
+  svr.Get("/api/test", [](const Request &req, Response &res) {
+    mm.broadcast_message("test", {"test", "test", "test", "test", 0});
+    res.set_content("{}", "application/json");
   });
 
   cout << "Server running on port 8080" << endl;

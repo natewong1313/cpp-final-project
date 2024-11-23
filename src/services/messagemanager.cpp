@@ -1,15 +1,20 @@
 #include "messagemanager.h"
 
+#include "../api/messaging.h"
+#include "json.hpp"
+
 #include <iostream>
 #include <mutex>
 #include <string>
 #include <unordered_map>
+using json = nlohmann::json;
 using namespace std;
 
 ChannelListener::ChannelListener() {}
 
-void ChannelListener::broadcast_message(string message) {
+void ChannelListener::broadcast_message(json message) {
   lock_guard<mutex> lk(m);
+  latestMessage = message;
   cv.notify_all();
   cout << "message broadcasted" << endl;
 }
@@ -17,14 +22,14 @@ void ChannelListener::broadcast_message(string message) {
 void ChannelListener::listen_for_message() {
   unique_lock<mutex> lk(m);
   cv.wait(lk);
-  cout << "Message received" << endl;
+  cout << "Message received" << latestMessage["content"].get<string>() << endl;
 }
 
 MessageManager::MessageManager() {
   channels = unordered_map<string, shared_ptr<ChannelListener>>();
 }
 
-void MessageManager::broadcast_message(string channelId, string message) {
+void MessageManager::broadcast_message(string channelId, json message) {
   // there should always be a listener
   shared_ptr<ChannelListener> listener = get_existing_listener(channelId);
   if (listener == nullptr) { listener = new_listener(channelId); }

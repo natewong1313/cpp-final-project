@@ -1,22 +1,27 @@
 #ifndef MESSAGEMANAGER_H
 #define MESSAGEMANAGER_H
 
+#include "../api/messaging.h"
+#include "json.hpp"
+
 #include <condition_variable>
 #include <mutex>
 #include <shared_mutex>
 #include <string>
 #include <unordered_map>
+using json = nlohmann::json;
 using namespace std;
 
 class ChannelListener {
   private:
     condition_variable cv;
     mutex m;
+    json latestMessage;
 
   public:
     ChannelListener();
 
-    void broadcast_message(string message);
+    void broadcast_message(json message);
     void listen_for_message();
 };
 
@@ -31,7 +36,7 @@ class MessageManager {
 
   public:
     MessageManager();
-    void broadcast_message(string channelId, string message);
+    void broadcast_message(string channelId, json message);
     void listen_for_message(string channelId);
 };
 
