@@ -52,6 +52,7 @@ void Database::setupTables() {
   for (const auto &file : filesystem::directory_iterator("../sql")) { runSqlFile(file.path()); }
 };
 
+// Runs all .sql files in /sql. Not being used effectively rn but will be useful eventually
 void Database::runSqlFile(string filePath) {
   string sqlToExec = getFileContents(filePath);
   int rc = sqlite3_exec(db, sqlToExec.c_str(), NULL, 0, NULL);
@@ -69,6 +70,7 @@ Statement::Statement(string query, sqlite3 *db) {
   this->bindCount = 0;
   this->db = db;
   int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
+  // for some reason sqlite enums dont work so we have to call the int values
   if (rc != 0 && rc != 100 && rc != 101) { logError(); }
 }
 

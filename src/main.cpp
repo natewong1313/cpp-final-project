@@ -214,5 +214,6 @@ int main() {
 
   cout << "Server running on port 8080" << endl;
   svr.listen("0.0.0.0", 8080);
+  newDb->cleanup();
   return 0;
 }
