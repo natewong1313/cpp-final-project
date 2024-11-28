@@ -38,9 +38,6 @@ void MessageManager::broadcast_message(string channelId, json message) {
   if (listener == nullptr) { listener = new_listener(channelId); }
 
   listener->broadcast_message(message);
-  // lock_guard<mutex> lk(m);
-  // cv.notify_all();
-  // cout << "message broadcasted" << endl;
 }
 
 shared_ptr<ChannelListener> MessageManager::get_existing_listener(string channelId) {

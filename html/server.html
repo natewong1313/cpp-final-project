@@ -221,8 +221,6 @@
     }
     async function sendMessage(e) {
       e.preventDefault();
-      const button = document.getElementById("sendButton");
-      button.disabled = true;
       const messageInput = document.getElementById("messageInput");
       const response = await fetch("/api/messages/new", {
         method: "POST",
@@ -237,7 +235,6 @@
       if (response.ok) {
         messageInput.value = "";
       }
-      button.disabled = false;
     }
     function newMessage(message) {
       addMessageToDom(message);
