@@ -168,11 +168,19 @@ int main() {
   });
   svr.Post("/api/channels/new", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
-    // string sessionToken = getTokenFromReq(req);
-    // string userId = getUserIdFromToken(sessionToken);
     string channelId = createChannel(j["serverId"], j["name"]);
     json resJson = json{{"id", channelId}};
     res.set_content(to_string(resJson), "application/json");
+  });
+  svr.Put("/api/channels/edit", [](const Request &req, Response &res) {
+    json j = json::parse(req.body);
+    editChannel(j["channelId"], j["name"], j["serverId"]);
+    res.set_content(to_string(json{{"success", true}}), "application/json");
+  });
+  svr.Post("/api/channels/delete", [](const Request &req, Response &res) {
+    json j = json::parse(req.body);
+    bool success = deleteChannel(j["channelId"], j["serverId"]);
+    res.set_content(to_string(json{{"success", success}}), "application/json");
   });
   svr.Get("/api/messages", [](const Request &req, Response &res) {
     if (!req.has_param("channel")) {

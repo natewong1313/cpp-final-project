@@ -58,7 +58,7 @@
       id="editChannelDialog"
       class="fixed inset-0 m-auto w-fit h-fit p-4 bg-stone-50 border border-stone-400 backdrop:bg-black/30"
     >
-      <form class="flex flex-col" onsubmit="createChannel(event)">
+      <form class="flex flex-col" onsubmit="editChannel(event)">
         <label class="text-sm mt-1">Server Name</label>
         <input
           id="editChannelName"
@@ -68,13 +68,15 @@
         />
         <div class="mt-4 grid grid-cols-2 gap-2">
           <button
-            id="createChannelButton"
+            id="editChannelButton"
             class="bg-amber-500 h-9 hover:bg-amber-600 text-sm"
           >
             Save
           </button>
           <button
+            type="button"
             id="createChannelButton"
+            onclick="deleteChannel()"
             class="h-9 bg-red-500 text-stone-200 hover:bg-red-600 text-sm"
           >
             Delete
@@ -219,6 +221,43 @@
       }
       button.disabled = false;
     }
+    async function editChannel(e) {
+      e.preventDefault();
+      const button = document.getElementById("editChannelButton");
+      button.disabled = true;
+      const response = await fetch("/api/channels/edit", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          channelId,
+          name: document.getElementById("editChannelName").value,
+          serverId,
+        }),
+      });
+      if (response.ok) {
+        document.getElementById(`${channelId}SidebarText`).innerHTML =
+          document.getElementById("editChannelName").value;
+        document.getElementById("editChannelDialog").close();
+      }
+      button.disabled = false;
+    }
+    async function deleteChannel() {
+      const response = await fetch("/api/channels/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          channelId,
+          serverId,
+        }),
+      });
+      if (response.ok) {
+        window.location.href = `/server?id=${serverId}`;
+      }
+    }
     async function sendMessage(e) {
       e.preventDefault();
       const messageInput = document.getElementById("messageInput");
@@ -262,7 +301,7 @@
       const channelStyle =
         channel.id === channelId ? "bg-stone-200" : "hover:bg-stone-200/50";
       const editButton =
-        user.id === serverData.adminId
+        user.id === serverData.adminId && channel.name !== "general"
           ? `<button 
               onclick="event.preventDefault();updateEditChannelDialog('${channel.id}')"
               class="flex-shrink-0 text-stone-500 hover:text-amber-500"
@@ -274,7 +313,7 @@
       ).innerHTML += `<a href="${href}" class="p-2 flex justify-between items-center gap-2 ${channelStyle}">
         <span class="flex-1 flex min-w-0">
           <span class="text-stone-500 mr-1">#</span>
-          <span class="truncate block">${channel.name}</span>
+          <span class="truncate block" id="${channel.id}SidebarText">${channel.name}</span>
         </span>
         ${editButton}
       </a>`;

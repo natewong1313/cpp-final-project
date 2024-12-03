@@ -11,5 +11,7 @@ vector<json> getChannels(string serverId);
 string getGeneralChannel(string serverId);
 bool isValidChannelId(string channelId);
 vector<json> getAuthors(string channelId);
+bool editChannel(string channelId, string name, string serverId);
+bool deleteChannel(string channelId, string serverId);
 
 #endif

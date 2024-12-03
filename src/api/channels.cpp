@@ -14,6 +14,8 @@ string selectChannelStmt = "SELECT * FROM channels WHERE id=?";
 string selectAuthorsStmt =
   "SELECT DISTINCT u.id, u.username FROM messages m JOIN users u ON u.id = "
   "m.author_id WHERE m.channel_id =?";
+string updateChannelStmt = "UPDATE channels SET name=? WHERE id=?";
+string deleteChannelStmt = "DELETE FROM channels WHERE id=?";
 
 string createChannel(string serverId, string name) {
   string channelId = createId();
@@ -76,4 +78,29 @@ vector<json> getAuthors(string channelId) {
   }
   stmt.finish();
   return authors;
+}
+
+bool editChannel(string channelId, string name, string serverId) {
+  // if the channel id is same as general channel, we dont want to allow renaming
+  string generalChannelId = getGeneralChannel(serverId);
+  if (generalChannelId == channelId) { return false; }
+  Database *db = Database::getInstance();
+  Statement stmt = db->newStatement(updateChannelStmt);
+  stmt.bind(name);
+  stmt.bind(channelId);
+  stmt.execute();
+  stmt.finish();
+  return true;
+}
+
+bool deleteChannel(string channelId, string serverId) {
+  // if the channel id is same as general channel, we dont wanna delete it
+  string generalChannelId = getGeneralChannel(serverId);
+  if (generalChannelId == channelId) { return false; }
+  Database *db = Database::getInstance();
+  Statement stmt = db->newStatement(deleteChannelStmt);
+  stmt.bind(channelId);
+  stmt.execute();
+  stmt.finish();
+  return true;
 }
