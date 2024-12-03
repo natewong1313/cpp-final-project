@@ -1,3 +1,5 @@
+// Handles user auth operations with the userTokens and users tables
+
 #ifndef AUTH_H
 #define AUTH_H
 
@@ -10,7 +12,7 @@ using namespace std;
 bool authenticateUser(string email, string password);
 string createSessionToken(string userId);
 void logoutUser(string sessionToken);
-string getCookieString(string sessionToken);
+string buildCookieString(string sessionToken);
 bool hasTokenCookie(const Request &req);
 string getTokenFromReq(const Request &req);
 string getUserIdFromToken(string sessionToken);

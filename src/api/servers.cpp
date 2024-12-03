@@ -35,12 +35,16 @@ string createServer(string adminId, string name) {
   return serverId;
 }
 
+// Helper function to return a db result as json
+// {"id": "", "adminId": "", "name": ""}
 json dbResultToJson(Statement stmt) {
   return json{{"id", stmt.getResultString(0)},
               {"adminId", stmt.getResultString(1)},
               {"name", stmt.getResultString(2)}};
 }
 
+// Returns all servers as a json array
+// see dbResultToJson
 vector<json> getServers() {
   vector<json> servers;
   Database *db = Database::getInstance();
@@ -50,6 +54,8 @@ vector<json> getServers() {
   return servers;
 }
 
+// Returns a server as a json obj given a server id
+// uses dbResultToJson for return type
 json getServer(string serverId) {
   Database *db = Database::getInstance();
   Statement stmt = db->newStatement(selectServerStmt);
@@ -64,6 +70,7 @@ json getServer(string serverId) {
   return serverData;
 }
 
+// Checks if a serverId is a valid server
 bool isValidServerId(string serverId) {
   if (serverId == "") { return false; }
   Database *db = Database::getInstance();

@@ -13,6 +13,9 @@ string insertuserStmt = "INSERT INTO users(id, username, email, password) VALUES
 string selectUserByEmailStmt = "SELECT id FROM users WHERE email=?";
 string selectUserByIdStmt = "SELECT * FROM users WHERE id=?";
 
+// Creates a user in the db
+// Throws an error if the username or email already exists
+// Returns the created userId
 string createUser(string username, string email, string password) {
   string userId = createId();
   Database *db = Database::getInstance();
@@ -34,6 +37,7 @@ string createUser(string username, string email, string password) {
   return userId;
 }
 
+// Returns a userId given an email
 string getUserIdByEmail(string email) {
   Database *db = Database::getInstance();
   Statement stmt = db->newStatement(selectUserByEmailStmt);
@@ -44,6 +48,8 @@ string getUserIdByEmail(string email) {
   return userId;
 }
 
+// Returns a user json obj given the id
+// {"id": "", "userrname": "", "email": "", "password": ""}
 json getUser(string userId) {
   Database *db = Database::getInstance();
   Statement stmt = db->newStatement(selectUserByIdStmt);
