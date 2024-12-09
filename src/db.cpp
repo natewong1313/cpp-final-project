@@ -19,6 +19,7 @@ Database::Database() {
   setupTables();
 };
 
+// Singleton
 Database *Database::getInstance() {
   if (instancePtr == nullptr) {
     lock_guard<mutex> lock(mtx);
@@ -27,6 +28,9 @@ Database *Database::getInstance() {
   return instancePtr;
 }
 
+// Opens a connection
+// Sqlite handles all multithreading stuff internally so its safe to share
+// A connection around
 void Database::connect() {
   int rc = sqlite3_open("main.db", &db);
   if (rc) {
@@ -65,6 +69,7 @@ Statement Database::newStatement(string query) {
   return Statement(query, getConnection());
 }
 
+// Creates a new Statement
 Statement::Statement(string query, sqlite3 *db) {
   this->query = query;
   this->bindCount = 0;
@@ -74,45 +79,54 @@ Statement::Statement(string query, sqlite3 *db) {
   if (rc != 0 && rc != 100 && rc != 101) { logError(); }
 }
 
+// Binds a string in the query
 void Statement::bind(string strVal) {
   bindCount++;
   sqlite3_bind_text(stmt, bindCount, strVal.c_str(), -1, SQLITE_TRANSIENT);
 }
 
+// Binds an int in the query
 void Statement::bind(int intVal) {
   bindCount++;
   sqlite3_bind_int(this->stmt, bindCount, intVal);
 }
 
+// Run query that returns single row, eitherwise use step() in a loop
 int Statement::execute() {
   int rc = sqlite3_step(stmt);
   if (rc != 0 && rc != 100 && rc != 101) { logError(); }
   return rc;
 }
 
+// Steps through query results
 int Statement::step() {
   return sqlite3_step(stmt);
 }
 
+// Cleanup
 void Statement::finish() {
   int rc = sqlite3_finalize(stmt);
   if (rc != 0 && rc != 100 && rc != 101) { logError(); }
 }
 
+// Returns the string result at the specified position in the return row
 string Statement::getResultString(int position) {
   if (sqlite3_column_type(stmt, position) == SQLITE_NULL) { return ""; }
   return reinterpret_cast<const char *>(sqlite3_column_text(stmt, position));
 }
 
+// Returns an integer at the specified position
 int Statement::getResultInt(int position) {
   return sqlite3_column_int(stmt, position);
 }
 
+// Pretty error logging
 void Statement::logError() {
   cerr << "Statement error occured: " << sqlite3_errcode(db) << "||" << sqlite3_errmsg(db) << "||"
        << query << endl;
 }
 
+// Returns the internal statement
 sqlite3_stmt *Statement::getStmt() {
   return this->stmt;
 }

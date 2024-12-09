@@ -14,6 +14,8 @@ using json = nlohmann::json;
 using namespace std;
 using namespace httplib;
 
+// Processes and emits events to listeners
+// Created by MessageManager
 class ChannelListener {
   private:
     condition_variable cv;
@@ -27,6 +29,7 @@ class ChannelListener {
     bool listen_for_message(DataSink &sink);
 };
 
+// Handles creating ChannelListener's
 class MessageManager {
   private:
     condition_variable cv;
