@@ -24,7 +24,7 @@ class ChannelListener {
     ChannelListener();
 
     void broadcast_message(json message);
-    void listen_for_message(DataSink &sink);
+    bool listen_for_message(DataSink &sink);
 };
 
 class MessageManager {

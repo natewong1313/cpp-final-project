@@ -81,7 +81,7 @@ int main() {
     }
     string userId = getUserIdByEmail(j["email"]);
     string sessionToken = createSessionToken(userId);
-    res.set_header("Set-Cookie", getCookieString(sessionToken));
+    res.set_header("Set-Cookie", buildCookieString(sessionToken));
   });
   svr.Post("/api/signup", [](const Request &req, Response &res) {
     json j = json::parse(req.body);
@@ -94,7 +94,7 @@ int main() {
       return res.set_content(to_string(json{{"error", e.what()}}), "application/json");
     }
     string sessionToken = createSessionToken(userId);
-    res.set_header("Set-Cookie", getCookieString(sessionToken));
+    res.set_header("Set-Cookie", buildCookieString(sessionToken));
   });
   svr.Get("/api/user", [](const Request &req, Response &res) {
     string sessionToken = getTokenFromReq(req);
@@ -163,7 +163,6 @@ int main() {
       return;
     }
     json authors = getAuthors(req.get_param_value("channel"));
-    cout << authors << endl;
     res.set_content(to_string(authors), "application/json");
   });
   svr.Post("/api/channels/new", [](const Request &req, Response &res) {
@@ -199,7 +198,7 @@ int main() {
     string userId = getUserIdFromToken(sessionToken);
     json msgJson = sendMessage(userId, channelId, msgContent);
     mm.broadcast_message(channelId, msgJson);
-    cout << "broadcasted message to channel " << channelId << endl;
+    cout << "POST to /api/messages/new in " << channelId << endl;
     res.set_content(to_string(msgJson), "application/json");
   });
   svr.Get("/api/messages/live", [](const Request &req, Response &res) {
@@ -209,12 +208,9 @@ int main() {
       return;
     }
     string channelId = req.get_param_value("channel");
-    cout << "listening for messages on channel " << channelId << endl;
     const auto sseListener = [channelId](size_t size, httplib::DataSink &sink) {
-      cout << "listening for messages on channel " << channelId << endl;
+      cout << "Started listener on channel " << channelId << endl;
       mm.listen_for_message(channelId, sink);
-      // string msg = "data: hello world\n\n";
-      // sink.write(msg.data(), msg.size());
       return true;
     };
     res.set_chunked_content_provider("text/event-stream", sseListener);
